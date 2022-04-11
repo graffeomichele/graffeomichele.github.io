@@ -107,7 +107,6 @@ header {
   width:270px;
   float:left;
   position:fixed;
-  left:10px !important;
   -webkit-font-smoothing:subpixel-antialiased;
 }
 
@@ -230,7 +229,7 @@ footer {
   }
 }
 
-@media print, screen and (max-width: 720px) {
+@media print, screen and (max-width: 1000px) {
   body {
     word-wrap:break-word;
   }
