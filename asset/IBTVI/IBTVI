@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+  <head>
+  
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | IBTVI</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+<style>
+div.c {
+  text-align: justify;
+  text-justify: inter-word;
+}
+</style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title style="color:#129fdc;"> &#9774;  Home page of Michele Graffeo   &#9774;</title>    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <center>
+        <h1 style="color:#129fdc;font-family:' monospace', 'lucida console';"> <a href="https://graffeomichele.github.io/"> <b>Michele Graffeo</b> </a></h1>
+
+        <h4 style="color:#129fdc;font-family:' monospace', 'lucida console';"> <a href="https://www.math.sissa.it/users/michele-graffeo" target="_blank">Institutional Webpage</a>-<a href="CV Michele Graffeo.pdf" target="_blank">CV</a></h1>
+    <img src="/asset/img/foto.jpg" width="200" height="271">
+        <hr>
+        <b style=" font-size: 20px;"> Mathematics Area  </b><br>
+        <b>SISSA<br>
+        Via Bonomea, 265, 34136 Trieste TS</b>
+        <hr>
+          <a href="mailto:mgraffeo@sissa.it"> <img src="mailicon.png" width="30" height="30"></a>&nbsp;&nbsp;
+          <a href="https://scholar.google.com/citations?hl=en&view_op=list_works&gmla=AJsN-F4aWDdoQpv8UOat3p2lDtJSLD5M1un5MgKymqLZ14buXyZgqgM8p-KOBLZxKu1ouQxflTfvLV54TZ7RS4-ACsSXnOVlLf3TjkGWk9UApfj-MGXr57g&user=FspFeA4AAAAJ" target="_blank"><img src="scholarlogo.png" width="30" height="30"></a>&nbsp;&nbsp;&nbsp;
+          <a href=" https://arxiv.org/search/?searchtype=author&query=Graffeo%2C+M" target="_blank"><img src="arxivlogo.png" width="30" height="30"></a>
+        <hr>
+          
+         
+        <p><img src="peaceflag.webp" width="150" height="100"></p>
+          </center>
+      </header>
+      <section>
+        <h1 style="color:#129fdc;font-family:' monospace', 'lucida console'; font-size: 35px;">About me</h1>
+        <p> <b> <div class="c">I am a PhD student in Geometry and Mathematical Physics at <a href="https://www.math.sissa.it/content/geometry-and-mathematical-physics-0" target="_blank">SISSA</a>. My supervisors are <a href="https://people.sissa.it/~bruzzo/webpage/" target="_blank">Ugo Bruzzo</a> and <a href="https://atricolfi.github.io/" target="_blank">Andrea T. Ricolfi</a>.</div></b></p>
+        <p>
+         <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">IBTVI</div>
+      </div>
+    </div>
+    <script>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/web.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/web.data",
+        frameworkUrl: buildUrl + "/web.framework.js",
+        codeUrl: buildUrl + "/web.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "IBTVI",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
+      };
+
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        container.className = "unity-mobile";
+        // Avoid draining fillrate performance on mobile devices,
+        // and default/override low DPI mode on mobile browsers.
+        config.devicePixelRatio = 1;
+        unityShowBanner('WebGL builds are not supported on mobile devices.');
+      } else {
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+        </p>
+        
+        
+     <!-- <footer>
+        <hr>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>-->
+      </section>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
