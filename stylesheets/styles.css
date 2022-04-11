@@ -107,6 +107,7 @@ header {
   width:270px;
   float:left;
   position:fixed;
+  left:10px !important;
   -webkit-font-smoothing:subpixel-antialiased;
 }
 
