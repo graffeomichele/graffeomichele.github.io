@@ -8,12 +8,12 @@ newPackage("DoubleNestedHilbertScheme",
 	  )
 
 
---M={{2},{1,2,3},{0,1,3},{0,1,3},{0,1,3,5},{0,1,3,6},{0,1,3,6,7,8},{0,1,3,6,6,6}};
+--M={{0,1,3,6,6,6},{0,1,3,6,7,8},{0,1,3,6},{0,1,3,6},{0,1,3},{0,1,2},{2}};
+--N={{0,1,3,6,6,6},{0,1,3,6,7,8},{0,1,3,6},{0,1,3,6},{0,1,3},{0,1,4},{2}};
 --O={{2},{0,0,3},{0,0,0},{0,0,3},{0,0,0,5},{0,0,0,0}};
 --P={{2},{0,0,3},{0,0,0},{0,0,0},{0,0,0,5},{0,0,0,0}};
---P={{1},{1,2},{0,1,2},{0,0,1,2},{0,0,0,1,2},{0,0,0,1,1,1}};
+--P={{0,0,0,1,1,1},{0,0,0,1,2},{0,0,1,2},{0,1,2},{1,2},{1}};
 
-8 components
 
 
 --L={{1,2},{0,1}};
@@ -27,18 +27,19 @@ export{
 "inizia",
 "mossa",
 "integrateDiagram",
-"finished",
-"rawList",
 "isInHilbertScheme",
-"genealogy"
+"genealogy",
+"isLeaf",
+"netRPP",
+"isRPP"
 }
 
 ------ COMPUTE SOCLES------
 
 socle = d-> (
-s :={((0,#d#0-1),d#0#(#d#0-1))};
+s :={((#d-1,#d#(#d-1)-1),d#(#d-1)#(#d#(#d-1)-1))};
 for i from 1 to #d-1 do (
-if #d#i>#d#(i-1) then s = append(s,((i,#d#i-1),d#i#(#d#i-1)));
+if #d#(#d-1-i)>#d#(#d-i) then s = {((#d-1-i,#d#(#d-1-i)-1),d#(#d-1-i)#(#d#(#d-1-i)-1))}|s;
 );
 clearOutput;
 return s;
@@ -54,7 +55,7 @@ l:=socle(d);
 if #l > 1 then(
 for i from 0 to #l-2 do
 (
-s=append(s, ((l#(i+1)#0#0,l#i#0#1),d#(l#(i+1)#0#0)#(l#i#0#1)  ) ) ;
+s=append(s, ((l#(i)#0#0,l#(i+1)#0#1),d#(l#(i)#0#0)#(l#(i+1)#0#1)  ) ) ;
 )
 );
 clearOutput;
@@ -79,8 +80,8 @@ return dimension ;
 
 inizia = d-> (
 start :={};
-start=for i from 0 to #d-2 list for a in d#i list 0;
-start = append (start, join({computeDimension (d)},for i from 0 to #(d#(#d-1))-2 list 0));
+start=for i from 1 to #d-1 list for a in d#i list 0;
+start = {join({computeDimension (d)},for i from 0 to #(d#0)-2 list 0)}| start;
 clearOutput;
 return start;
 )
@@ -90,9 +91,8 @@ return start;
 
 mossa = d->( 
 spostati :={};
-for l from 0 to #d-1 do( 
+for i from 0 to #d-1 do( 
 
-i:=#d-1-l;
 for j from 0 to #(d#i)-1 do (if d#i#j !=0 then(
 
 if #(d#i)>j+1 then (
@@ -103,13 +103,15 @@ C:=join(A,{v},B);
 spostati = append (spostati,C);
 );
 
-if #(d#(i-1))>j and i>0 then(
-E:=for k from 0 to i-2 list d#k;
-u:= join( for h from 0 to j-1 list d#(i-1)#h,{d#(i-1)#j+1}, for h from j+1 to #(d#(i-1))-1 list d#(i-1)#h);
-w:= join( for h from 0 to j-1 list d#(i)#h,{d#(i)#j-1}, for h from j+1 to #(d#(i))-1 list d#(i)#h);
-F:=for k from i+1 to #d-1 list d#k;
+if i<#d-1 then(
+if #(d#(i+1))>j then(
+E:=for k from 0 to i-1 list d#k;
+u:= join( for h from 0 to j-1 list d#(i)#h,{d#(i)#j-1}, for h from j+1 to #(d#(i))-1 list d#(i)#h);
+w:= join( for h from 0 to j-1 list d#(i+1)#h,{d#(i+1)#j+1}, for h from j+1 to #(d#(i+1))-1 list d#(i+1)#h);
+F:=for k from i+2 to #d-1 list d#k;
 D:=join(E,{u,w},F);
 spostati = append (spostati,D);
+);
 );
 )));
 clearOutput;
@@ -120,51 +122,53 @@ return spostati;
 
 integrateDiagram =d->(
 convertito:={};
-a:={d#(#d-1)#0};
-for j from 1 to #(d#(#d-1))-1 do(
-a=join(a,{d#(#d-1)#j+a#(j-1)});
+a:={d#0#0};
+for j from 1 to #(d#0)-1 do(
+a=join(a,{d#0#j+a#(j-1)});
 );
 convertito ={a};
-for k from 1 to #d-1 do(
-i:= #d-1-k;
-b:={d#i#0+convertito#0#0};
+for i from 1 to #d-1 do(
+b:={d#i#0+convertito#(i-1)#0};
 for j from 1 to #(d#i)-1 do(
-b=append(b,d#i#j+b#(j-1)+convertito#0#j-convertito#0#(j-1));
+b=append(b,d#i#j+b#(j-1)+convertito#(i-1)#j-convertito#(i-1)#(j-1));
 );
-convertito= {b}|convertito;
+convertito= convertito|{b};
 );
 clearOutput;
 return convertito;
 )
 
+------ netRPP ------
 
------- FINISHED ---------
-
-finished = d->(
-l:= for t in socle d list t#0;
-print l;
-a:=0;
-for i from 0 to #d-1 do(
-for j from 0 to #d#i-1 do(
-if position(l,b->b==(i,j))===null then a=a+d#i#j;
-)
+netRPP =d->(
+ a:="";
+b:=for c in d#0 list length toString c;
+for i from 1 to #d-1 do (
+for j from 0 to #(d#i)-1 do (
+if length toString d#i#j> b#j then b=join(for l from 0 to j-1 list b#l,{length toString d#i#j},for l from j+1 to #b-1 list b#l);
 );
-if a == 0 then (clearOutput;  return true;) else (clearOutput; return false;) ;
+);
+for c in b do( 
+u:="+"|concatenate(for i from 1 to c list "-");
+a= concatenate(a,u) ) ;
+a=a|"+\n";
+for i from 0 to #d-1 do(
+for j from 0 to  #(d#i)-1 do a= a|"|"|toString d#i#j|concatenate(for i from 1 to b#j - length toString d#i#j list " ");
+a=a|"|\n";
+for k from 0 to #(d#i)-1 do( 
+u:="+"|concatenate(for i from 1 to b#k list "-");
+a= concatenate(a,u) ) ;
+a=a|"+\n";
+);
+return a;
+
 )
 
------- rawList ---------
-
-rawList = d->(
-L:=d;
-D:={};
-for a in L do D= join(D , mossa a);
-L=unique join(L,D);
-if L== unique d then (clearOutput; return unique L;) else (clearOutput; return unique rawList(L););
-)
 
 ------- isInHilbertScheme ----------
 
 isInHilbertScheme = (a,b)->(
+if isRPP a and isRPP b then(
 ver:=true;
 if (( for c in a list #c)==(for c in b list #c))  then(
 for i from 0 to #a-1 do(
@@ -173,7 +177,11 @@ if a#i#j-b#i#j<0 then ver =false;
 )
 ) 
 ) else ver =false;
-return ver;
+return ver;)
+else(
+print  "ERROR: it is not a RPP";
+return null;
+);
 )
 
 
@@ -185,7 +193,6 @@ F:= mossa d;
 a:= for f in F list isInHilbertScheme (integrateDiagram f,b);
 c:= for f in F list false;
 if a==c then return true else return false;
---return true;
 )
 else return false;
 )
@@ -194,6 +201,7 @@ else return false;
 ------ GENEALOGY --------
 
 genealogy = d->(
+if isRPP d then(
 graph:={};
 irrcomp:={};
 Q:={inizia d};
@@ -211,5 +219,30 @@ if isLeaf(D,d)==true then irrcomp=irrcomp | {D};
 );
 return (graph,irrcomp);
 )
+else(
+print  "ERROR: it is not a RPP";
+return (null, null);
+);
+)
 
+
+-------- isRPP -------
+
+isRPP = d->(
+
+itis:=true;
+if  (class d) =!=List  then itis =false else if ((unique for a in d list (class a))=!={List} ) then itis =false;
+for i from 1 to #d-1 do(
+if  d#i#0<d#(i-1)#0  then itis =false;
+);
+for i from 1 to #d#0-1 do(
+if  d#0#i<d#0#(i-1)  then itis =false;
+);
+for i from 1 to #d-1 do(
+for j from 1 to #(d#i)-1 do(
+if  (d#i#j< d#(i-1)#j or d#i#j< d#i#(j-1))  then itis=false ;
+)
+);
+return itis;
+)
 
