@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Calcolatore di somma</title>
+  <script>
+    function calcolaSomma() {
+      // Ottieni i valori inseriti dall'utente
+      var numero1 = parseFloat(document.getElementById('numero1').value);
+      var numero2 = parseFloat(document.getElementById('numero2').value);
+      
+      // Verifica se entrambi i valori sono numeri
+      if (!isNaN(numero1) && !isNaN(numero2)) {
+        // Calcola la somma
+        var somma = numero1 + numero2;
+        
+        // Mostra il risultato
+        document.getElementById('risultato').innerHTML = 'La somma è: ' + somma;
+      } else {
+        // Mostra un messaggio di errore se uno dei valori inseriti non è un numero
+        document.getElementById('risultato').innerHTML = 'Inserisci due numeri validi.';
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Calcolatore di somma</h1>
+  
+  <label for="numero1">Inserisci il primo numero:</label>
+  <input type="text" id="numero1"><br><br>
+  
+  <label for="numero2">Inserisci il secondo numero:</label>
+  <input type="text" id="numero2"><br><br>
+  
+  <button onclick="calcolaSomma()">Calcola somma</button><br><br>
+  
+  <p id="risultato"></p>
+</body>
+</html>
