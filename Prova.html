@@ -3,6 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Calcolatore di somma</title>
+</head>
+<body>
+  <h1>Calcolatore di somma</h1>
+  
+  <label for="numero1">Inserisci il primo numero:</label>
+  <input type="text" id="numero1"><br><br>
+  
+  <label for="numero2">Inserisci il secondo numero:</label>
+  <input type="text" id="numero2"><br><br>
+  
+  <button onclick="calcolaSomma()">Calcola somma</button><br><br>
+  
+  <p id="risultato"></p>
+
+  <h1>Elaborazione di un polinomio</h1>
+
+  <!-- Form per inserire il polinomio -->
+  <form id="polynomialForm">
+    <label for="polynomialInput">Inserisci il polinomio (es. 2x^3 + 5x^2 - 7x + 3):</label>
+    <input type="text" id="polynomialInput" name="polynomialInput">
+    <button type="submit">Calcola coefficienti</button>
+  </form>
+
+  <!-- Output per visualizzare i coefficienti -->
+  <div id="coefficientsOutput">
+    <h2>Coefficienti del polinomio:</h2>
+    <p id="coefficientsResult"></p>
+  </div>
+
   <script>
     function calcolaSomma() {
       // Ottieni i valori inseriti dall'utente
@@ -57,35 +86,5 @@
     return coefficients;
   }
   </script>
-</head>
-<body>
-  <h1>Calcolatore di somma</h1>
-  
-  <label for="numero1">Inserisci il primo numero:</label>
-  <input type="text" id="numero1"><br><br>
-  
-  <label for="numero2">Inserisci il secondo numero:</label>
-  <input type="text" id="numero2"><br><br>
-  
-  <button onclick="calcolaSomma()">Calcola somma</button><br><br>
-  
-  <p id="risultato"></p>
-
-<h1>Elaborazione di un polinomio</h1>
-
-<!-- Form per inserire il polinomio -->
-<form id="polynomialForm">
-  <label for="polynomialInput">Inserisci il polinomio (es. 2x^3 + 5x^2 - 7x + 3):</label>
-  <input type="text" id="polynomialInput" name="polynomialInput">
-  <button type="submit">Calcola coefficienti</button>
-</form>
-
-<!-- Output per visualizzare i coefficienti -->
-<div id="coefficientsOutput">
-  <h2>Coefficienti del polinomio:</h2>
-  <p id="coefficientsResult"></p>
-</div>
-
-  
 </body>
 </html>
