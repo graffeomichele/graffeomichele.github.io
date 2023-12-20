@@ -1,90 +1,93 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Calcolatore di somma</title>
+    <meta charset="UTF-8">
+    <title>CALCOLO MOTIVICO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdn.rawgit.com/davidedc/Algebrite/master/dist/algebrite.bundle-for-browser.js"></script>
 </head>
 <body>
-  <h1>Calcolatore di somma</h1>
-  
-  <label for="numero1">Inserisci il primo numero:</label>
-  <input type="text" id="numero1"><br><br>
-  
-  <label for="numero2">Inserisci il secondo numero:</label>
-  <input type="text" id="numero2"><br><br>
-  
-  <button onclick="calcolaSomma()">Calcola somma</button><br><br>
-  
-  <p id="risultato"></p>
-
-  <h1>Elaborazione di un polinomio</h1>
-
-  <!-- Form per inserire il polinomio -->
-  <form id="polynomialForm">
-    <label for="polynomialInput">Inserisci il polinomio (es. 2x^3 + 5x^2 - 7x + 3):</label>
-    <input type="text" id="polynomialInput" name="polynomialInput">
-    <button type="submit">Calcola coefficienti</button>
-  </form>
-
-  <!-- Output per visualizzare i coefficienti -->
-  <div id="coefficientsOutput">
-    <h2>Coefficienti del polinomio:</h2>
-    <p id="coefficientsResult"></p>
-  </div>
-
-  <script>
-    function calcolaSomma() {
-      // Ottieni i valori inseriti dall'utente
-      var numero1 = parseFloat(document.getElementById('numero1').value);
-      var numero2 = parseFloat(document.getElementById('numero2').value);
-      
-      // Verifica se entrambi i valori sono numeri
-      if (!isNaN(numero1) && !isNaN(numero2)) {
-        // Calcola la somma
-        var somma = numero1 + numero2;
-        
-        // Mostra il risultato
-        document.getElementById('risultato').innerHTML = 'La somma è: ' + somma;
-      } else {
-        // Mostra un messaggio di errore se uno dei valori inseriti non è un numero
-        document.getElementById('risultato').innerHTML = 'Inserisci due numeri validi.';
-      }
-    }
+    <h1>DEFINITIVO</h1>
+     <p> Al momento il programma fa la segunete cosa, dato un polinomio p nella variabile L e un numero n, sviluppa (1-t)^(p) a un ordine bastanza alto in modo che i primi n coefficienti siano corretti. A breve troncherò in modo che compaiano solo i termini corretti. So che è semplice e sappiamo farlo tutti, ma datemi tempo. Che poi si rivoluziona. Qesti sono solo due giorni di lavoro senza che abbia mai fatto niente in javascript</p>
+     <p> GRAZIE Chatgpt </p>
+    <label for="polinomioInput">Inserisci il polinomio (Es. 1 + 2L):</label>
+    <input type="text" id="polinomioInput" placeholder="Es. 1 + 2L">
+    <br><br> 
+    <label for="gradoSviluppo">Grado di attendibilità:</label>
+    <input type="number" id="gradoSviluppo" min="0" value="1">
+    <br><br>
+<button onclick="sviluppoCompleto(math.parse(document.getElementById('polinomioInput').value) )">Sviluppo completo</button>
     
-  document.getElementById('polynomialForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita il ricaricamento della pagina al submit del form
+    <div id="output"></div>
 
-    // Ottieni il valore inserito dall'utente
-    let polynomial = document.getElementById('polynomialInput').value;
+    <script>
+        var output = document.getElementById('output');
+	
+	function sviluppoMonomio(p,n){
+		var t = math.parse('t');
+		var sviluppo = math.parse('0');
+            for (var i = 0; i < n; i++) {
+		sviluppo = sviluppo +'+'+ math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')'));
+            } 
+		var espansione = Algebrite.expand( sviluppo.toString() );
+		return espansione;
+	}
 
-    // Chiama la funzione per ottenere i coefficienti
-    let coefficients = getCoefficients(polynomial);
+	function sviluppoCompleto(p){
 
-    // Mostra i coefficienti nell'output
-    document.getElementById('coefficientsResult').textContent = coefficients;
-  });
+            output.innerHTML = ''; // Pulisce l'output precedente
 
-  // Funzione per ottenere i coefficienti dal polinomio inserito
-  function getCoefficients(polynomial) {
-    // Implementazione di elaborazione del polinomio per ottenere i coefficienti
-    // Questo è solo un esempio di implementazione molto semplice
-    // È necessario un parser più complesso per polinomi complessi
+	     var completo = 1;
+	     var numero  = parseInt(math.simplify( (parseInt(document.getElementById('gradoSviluppo').value)).toString()+ '+1')); 
+	     for (var i = 0; i < degreePolynomial(p,math.parse('0'))+1 ; i++) {
+		completo =     Algebrite.expand( math.parse( '(' + completo.toString() + ')*(' + (Algebrite.expand( sviluppoMonomio(estraiTermine(p,i),numero))).toString()+ ')').toString()  );
+            }
+		output.innerHTML += "<p>"   + completo  +"</p>";	    
+}
+	        function estraiTermine(p, n) {
+    var node = p;
+    var grado = parseInt(n);
+    var der = nthDerivative(node, grado).evaluate({ L: 0 }) / fattoriale(grado);
+    var fattore = math.simplify(math.parse('((' + der + '))*L^' + grado.toString()));
+    
+    return fattore; // Restituisce il valore calcolato invece di manipolare l'output direttamente
+}
 
-    // Dividi il polinomio in termini separati
-    let terms = polynomial.split(/\s*[+-]\s*/);
+        function nthDerivative(f, n) {
+            var result = f;
+            for (var i = 0; i < n; i++) {
+                result = math.derivative(result, 'L');
+            }
+            return result;
+        }
+        function fattoriale(n) {
+            if (n === 0 || n === 1) {
+                return 1;
+            } else {
+                return math.multiply(n, fattoriale(n - 1));
+            }
+        }
 
-    // Inizializza un vettore per i coefficienti
-    let coefficients = [];
+	function degreePolynomiala(p,i){
+	if (math.derivative(p, 'L').evaluate({ L: 0 }) == 0 ) {
+                return i;
+            } else {
+            //output.innerHTML += "<p>"   + math.derivative(p, 'L') + "</p>";
+                degreePolynomial(math.derivative(p, 'L'),i+1);
+            }
+	
+}
+	function degreePolynomial(p,i){
+	    var j = parseInt(i); 
+            if (math.derivative(p, 'L').evaluate({ L: 0 }) === 0  ) {
+                return i;
+            } else {
+	       var q= math.derivative(p, 'L');
+               return degreePolynomial( q , j+parseInt('1'));
+            }
+}
 
-    // Ciclo attraverso i termini e ottieni i coefficienti
-    for (let term of terms) {
-      // Estrai il coefficiente
-      let coefficient = parseFloat(term.match(/^-?\d*\.?\d+/)[0]);
-      coefficients.push(coefficient);
-    }
+    </script>
 
-    return coefficients;
-  }
-  </script>
 </body>
 </html>
