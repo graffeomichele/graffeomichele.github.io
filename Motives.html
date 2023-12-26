@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CALCOLO MOTIVICO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdn.rawgit.com/davidedc/Algebrite/master/dist/algebrite.bundle-for-browser.js"></script>
+</head>
+<body><h1>Computation of motives given &Omega;<sub>i</sub></h1>
+    <p> Currently, given the known  &Omega;<sub>i</sub>, the program computes the motives as far as possible. It is possible to check product factors by clicking the button to the right of each input box.</p>
+    <div id="output"></div>
+
+
+    <script>
+        var output = document.getElementById('output');
+        function creaCaselleInput() {
+            let n = parseInt(prompt("Enter the number of Ωi you know"));
+
+
+            let body = document.getElementsByTagName("body")[0];
+        
+            for (let i = 1; i <= n; i++) {
+                let container = document.createElement("div");
+                container.setAttribute("style", "margin-bottom: 5px;");
+        
+                let input = document.createElement("input");
+                input.setAttribute("type", "text");
+                input.setAttribute("id", "input_" + i);
+                input.setAttribute("value", i);
+                input.setAttribute("style", "margin-left: 5px;margin-right: 5px;"); 
+        
+                let omegaText = document.createElement("span");
+                omegaText.innerHTML = "&Omega;<sub>" + i + "</sub>  ";
+                omegaText.setAttribute("style", "margin-left: 5px;");
+
+                let output = document.createElement("span"); // Creazione dell'output per l'input corrente
+                output.setAttribute("id", "output_" + i);
+                output.setAttribute("style", "margin-left: 10px;"); // Aggiunto spazio a sinistra dell'output
+        
+                let button = document.createElement("button");
+                button.textContent = "Factor " + i ;
+                button.setAttribute("type", "button");
+        
+                button.addEventListener("click", function() {
+                    mostraValori(i);
+                });
+        
+                container.appendChild(omegaText);
+                container.appendChild(input);
+                container.appendChild(button);
+                container.appendChild(output); 
+                body.appendChild(container);
+                body.appendChild(document.createElement("br"));
+            }
+        
+            let mostraValoriButton = document.createElement("button");
+            mostraValoriButton.textContent = "Motives";
+            mostraValoriButton.setAttribute("type", "button");
+        
+            mostraValoriButton.addEventListener("click", function() {
+                finale(); // Valore predefinito '1'
+            });
+        
+            body.appendChild(mostraValoriButton);
+        }
+         
+         
+        function mostraValori(h) {
+            let inputId = "input_" + h;
+            let outputId = "output_" + h; // Modifica per far riferimento all'ID unico dell'output
+            let outputElement = document.getElementById(outputId); // Modifica per selezionare l'elemento di output corretto
+        
+            if (outputElement) {
+                let inputElement = document.getElementById(inputId);
+                if (inputElement) {
+                    let valoreInput = Algebrite.expand(inputElement.value).toString(); 
+                    
+                    outputElement.innerText = sviluppoProdotto(math.parse(valoreInput),h+1) ; // Mostra il valore dell'input nell'output
+                } else {
+                    console.log("Elemento con ID " + inputId + " non trovato");
+                    outputElement.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
+                }
+            } else {
+                console.log("Elemento con ID " + outputId + " non trovato");
+            }}
+         
+
+        	function sviluppoMonomio(p,n){
+                var output = document.getElementById("output");
+                        var t = math.parse('t');
+                        var sviluppo = math.parse('0');
+                            for (var i = 0; i < n; i++) {
+                        var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')'));
+                        sviluppo = sviluppo +'+'+ termine.toString().replace(/-/g, "(-1)*");
+                            } 
+                        var espansione = Algebrite.expand( sviluppo.toString() ); 
+                        return espansione;
+                    }
+                
+            function sviluppoCompleto(p){
+                if (p !== null) {
+                    var completo = 1;                   
+                    let n = parseInt(document.getElementsByTagName("input").length+1);  
+                    for (var i = 0; i < parseInt(degreePolynomial(p ))+1 ; i++) {
+                        completo =      Algebrite.expand( math.parse( '(' + completo.toString() + ')*(' + (Algebrite.expand( sviluppoMonomio(estraiTermine(p,i, 'L'),n ))).toString()+ ')').toString());
+                        
+                           var fine =   Algebrite.parse(completo) ;		
+                }
+                        return truncate(math.parse(fine.toString()),n);
+                                 
+                }
+            }
+            function estraiTermine(p, n , variable) {
+                var L=math.parse(variable);
+                var node = p;
+                var grado = parseInt(n);
+                var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
+                
+                var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString()));
+                    
+                    return fattore; // Restituisce il valore calcolato invece di manipolare l'output direttamente
+                }
+                
+                function nthDerivative(f, n , a) {
+                        var result =  f;
+                        for (var i = 0; i < n; i++) {
+                            result = math.derivative(result, a);
+                        }
+                        return result;
+                        }
+                
+                
+                function fattoriale(n) {
+                    if (n === 0 || n === 1) {
+                        return 1;
+                    } 
+                    else {
+                        return math.multiply(n, fattoriale(n - 1));
+                        }
+                    }
+
+                    function degreePolynomial(p) {
+                        var stringa=p.toString();
+                        stringa = stringa.replace(/\s/g, ''); // Rimuove tutti gli spazi dalla stringa
+                    
+                        let regex = /\^(\d+)/g;
+                        let matches = stringa.match(regex);
+                        let matches2 = stringa.match('L'); // Trova tutte le corrispondenze nella stringa senza spazi
+                    
+                        let massimoA = 0;
+                    
+                        if (matches) {
+                            matches.forEach(match => {
+                                let numeroA = parseInt(match.substring(1)); // Estrai il valore di 'a' dalla corrispondenza
+                                massimoA = Math.max(massimoA, numeroA); // Aggiorna il massimo valore di 'a' trovato finora
+                            });
+                        }
+                        else if(matches2){massimoA=1}
+                    
+                        return massimoA;
+                    }
+                    
+                    
+
+                    
+                function truncate(p, n) {
+                    var stringa = Algebrite.expand(p.toString()).toString();
+                    const regex = /t\^(\d+)/g;
+                    let match;
+                    let minExponent = Number.MAX_SAFE_INTEGER;
+                    let minExponentIndex = -1;
+                
+                    while ((match = regex.exec(stringa)) !== null) {
+                        const exponent = parseInt(match[1]);
+                        if (exponent > n && exponent < minExponent) {
+                            minExponent = exponent;
+                            minExponentIndex = match.index;
+                        }
+                    }
+                
+                    if (minExponentIndex !== -1) {
+                        const indexT = stringa.lastIndexOf('t', minExponentIndex); // Ultimo 't' prima dell'occorrenza trovata
+                        const firstPart = stringa.substring(0, indexT); // Parte della stringa prima dell'occorrenza
+                        const secondPart = stringa.substring(indexT); // Parte della stringa dall'occorrenza in poi
+                
+                     const indicePiu =  secondPart.indexOf('+') ; 
+                  if (indicePiu !== -1) { 
+                    return math.simplify(math.parse(secondPart.substring( indicePiu+1)));
+                  } 
+                else {
+                    return "Il carattere '+' non è presente nella stringa.";
+                  }
+                    }
+                    
+                    // Se non c'è nessuna corrispondenza o 't^a' con esponente minore di n, restituisci la stringa originale
+                    return p;
+                
+                
+                }
+                
+function sviluppoProdotto(p,a){ 
+    var i =math.simplify(math.parse(a + "-" + "1"));
+        var  funzione =sviluppoCompleto(p);
+          let n = parseInt(document.getElementsByTagName("input").length-2);    
+     var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +i+" )")),n+2) ;    
+     return  result ;
+    }
+    
+    function finale(){
+        output.innerHTML = ''; // Pulisce l'output precedente
+        let n = parseInt(document.getElementsByTagName("input").length);  
+        var stringa = "1";
+        for(var h = 1 ; h<=n ; h++ ){ 
+           let inputId = "input_" + h.toString();
+            let outputId = "output_" + h.toString(); // Modifica per far riferimento all'ID unico dell'output
+            let outputElement = document.getElementById(outputId); // Modifica per selezionare l'elemento di output corretto
+        
+            if (outputElement) {
+                let inputElement = document.getElementById(inputId);
+                if (inputElement) {
+                    let valoreInput = Algebrite.expand(inputElement.value).toString(); 
+                    stringa += "*(" + sviluppoProdotto(math.parse(valoreInput),h+1)+")"; 
+                    stringa =  "(" + truncate( Algebrite.expand(stringa) ,n).toString()+")";
+                } else {
+                    console.log("Elemento con ID " + inputId + " non trovato");
+                    output.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
+                }
+            } else {
+                console.log("Elemento con ID " + outputId + " non trovato");
+            }
+        } 
+        var result = truncate( Algebrite.expand(stringa) ,n);
+        output.innerHTML += "<p>"   +  stringa  +"</p>"; 
+        output.innerHTML += "<p>"   +  result  +"</p>"; 
+        return result;
+    }
+        window.onload = creaCaselleInput;
+        
+    </script>
+</body>
+</html>
