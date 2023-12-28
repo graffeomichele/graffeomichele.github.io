@@ -5,6 +5,9 @@
     <title>CALCOLO MOTIVICO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
     <script src="https://cdn.rawgit.com/davidedc/Algebrite/master/dist/algebrite.bundle-for-browser.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
 </head>
 <body><h1>Computation of motives given &Omega;<sub>i</sub></h1>
     <p> Currently, given the known  &Omega;<sub>i</sub>, the program computes the motives as far as possible. It is possible to check product factors by clicking the button to the right of each input box.</p>
@@ -12,58 +15,107 @@
 
 
     <script>
-        var output = document.getElementById('output');
+        var output = document.getElementById('output'); 
         function creaCaselleInput() {
+            output.innerHTML = ''; // Pulisce l'output precedente
             let n = parseInt(prompt("Enter the number of Ωi you know"));
-
-
+          
             let body = document.getElementsByTagName("body")[0];
-        
-            for (let i = 1; i <= n; i++) {
+          
+            function createInputFields() {
+              let containers = document.querySelectorAll(".inputContainer");
+              containers.forEach(container => container.remove()); // Rimuove i container precedenti
+               
+              for (let i = 1; i <= n; i++) {
                 let container = document.createElement("div");
+                container.setAttribute("class", "inputContainer");
                 container.setAttribute("style", "margin-bottom: 5px;");
-        
+          
                 let input = document.createElement("input");
                 input.setAttribute("type", "text");
                 input.setAttribute("id", "input_" + i);
                 input.setAttribute("value", i);
-                input.setAttribute("style", "margin-left: 5px;margin-right: 5px;"); 
-        
+                input.setAttribute("style", "margin-left: 5px;margin-right: 5px;");
+          
                 let omegaText = document.createElement("span");
                 omegaText.innerHTML = "&Omega;<sub>" + i + "</sub>  ";
                 omegaText.setAttribute("style", "margin-left: 5px;");
-
-                let output = document.createElement("span"); // Creazione dell'output per l'input corrente
+          
+                let output = document.createElement("span");
                 output.setAttribute("id", "output_" + i);
-                output.setAttribute("style", "margin-left: 10px;"); // Aggiunto spazio a sinistra dell'output
-        
+                output.setAttribute("style", "margin-left: 10px;");
+          
                 let button = document.createElement("button");
-                button.textContent = "Factor " + i ;
+                button.textContent = "Factor " + i;
                 button.setAttribute("type", "button");
-        
+          
                 button.addEventListener("click", function() {
-                    mostraValori(i);
+                  mostraValori(i);
                 });
-        
+          
                 container.appendChild(omegaText);
                 container.appendChild(input);
                 container.appendChild(button);
-                container.appendChild(output); 
+                container.appendChild(output);
                 body.appendChild(container);
-                body.appendChild(document.createElement("br"));
-            }
-        
-            let mostraValoriButton = document.createElement("button");
-            mostraValoriButton.textContent = "Motives";
-            mostraValoriButton.setAttribute("type", "button");
-        
-            mostraValoriButton.addEventListener("click", function() {
+              }
+          
+              let buttonsContainer = document.createElement("div");
+              buttonsContainer.setAttribute("class", "buttonsContainer");
+          
+              let mostraValoriButton = document.createElement("button");
+              mostraValoriButton.textContent = "Motives";
+              mostraValoriButton.setAttribute("type", "button");
+              mostraValoriButton.setAttribute("style", "margin-right: 5px;");
+          
+              mostraValoriButton.addEventListener("click", function() {
                 finale(); // Valore predefinito '1'
+              });
+          
+              buttonsContainer.appendChild(mostraValoriButton);
+          
+              let setP2 = document.createElement("button");
+              setP2.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>2</sup>)<sup>[4]</sup><sub>0</sub>';
+
+              setP2.setAttribute("type", "button");
+              setP2.setAttribute("style", "margin-right: 5px;");
+          
+              setP2.addEventListener("click", function() { 
+                buttonsContainer.remove();
+                
+                n = parseInt(prompt("How many terms do you need?"));
+                createInputFields();
+                for (var i =1 ; i<=n ;i++){
+                document.getElementById("input_"+i).setAttribute("value", "L^"+ math.simplify(i-1));
+                }
+              });
+          
+              buttonsContainer.appendChild(setP2);
+                    
+            let setToZeroButton = document.createElement("button");
+            setToZeroButton.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>3</sup>)<sup>[4]</sup><sub>0</sub>';
+
+            setToZeroButton.setAttribute("type", "button");
+            setToZeroButton.setAttribute("style", "margin-right: 5px;");
+        
+            setToZeroButton.addEventListener("click", function() { 
+              buttonsContainer.remove();
+              n = 5;
+              createInputFields();
+              document.getElementById("input_1").setAttribute("value", "1");
+              document.getElementById("input_2").setAttribute("value", "L+L^2");
+              document.getElementById("input_3").setAttribute("value", "L^2+L^3+L^4");
+              document.getElementById("input_4").setAttribute("value", "L^6 + 2*L^5 + L^4 + L^3 - L^2");
+              document.getElementById("input_5").setAttribute("value", "L^8 + 2*L^7 + 2*L^6 + L^5 - L^3"); 
+              
             });
         
-            body.appendChild(mostraValoriButton);
-        }
-         
+            buttonsContainer.appendChild(setToZeroButton);
+        
+            body.appendChild(buttonsContainer);
+          }
+            createInputFields(); // Chiamata iniziale per creare i campi di input
+          }
          
         function mostraValori(h) {
             let inputId = "input_" + h;
@@ -91,9 +143,9 @@
                         var sviluppo = math.parse('0');
                             for (var i = 0; i < n; i++) {
                         var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')'));
-                        sviluppo = sviluppo +'+'+ termine.toString().replace(/-/g, "(-1)*");
+                        sviluppo = sviluppo +'+'+ '(' + termine.toString().replace(/-/g, "(-1)*") + ')';
                             } 
-                        var espansione = Algebrite.expand( sviluppo.toString() ); 
+                        var espansione = Algebrite.expand( sviluppo.toString() );  
                         return espansione;
                     }
                 
@@ -102,14 +154,14 @@
                     var completo = 1;                   
                     let n = parseInt(document.getElementsByTagName("input").length+1);  
                     for (var i = 0; i < parseInt(degreePolynomial(p ))+1 ; i++) {
-                        completo =      Algebrite.expand( math.parse( '(' + completo.toString() + ')*(' + (Algebrite.expand( sviluppoMonomio(estraiTermine(p,i, 'L'),n ))).toString()+ ')').toString());
-                        
-                           var fine =   Algebrite.parse(completo) ;		
+                        var temp = (Algebrite.expand( sviluppoMonomio(estraiTermine(p,i, 'L'),n ))).toString();
+                        completo =      Algebrite.expand(   '(' + completo.toString() + ')*(' + temp + ')'  ); 
                 }
-                        return truncate(math.parse(fine.toString()),n);
+                        return truncate(completo.toString(),n);
                                  
                 }
-            }
+            } 
+            //.replace(/\+\s+-/g, "-")
             function estraiTermine(p, n , variable) {
                 var L=math.parse(variable);
                 var node = p;
@@ -202,7 +254,7 @@ function sviluppoProdotto(p,a){
     var i =math.simplify(math.parse(a + "-" + "1"));
         var  funzione =sviluppoCompleto(p);
           let n = parseInt(document.getElementsByTagName("input").length-2);    
-     var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +i+" )")),n+2) ;    
+     var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +i+" )").replace(/\+\s+-/g, "-")),n+2) ;    
      return  result ;
     }
     
@@ -229,8 +281,7 @@ function sviluppoProdotto(p,a){
                 console.log("Elemento con ID " + outputId + " non trovato");
             }
         } 
-        var result = truncate( Algebrite.expand(stringa) ,n);
-        output.innerHTML += "<p>"   +  stringa  +"</p>"; 
+        var result = truncate( Algebrite.expand(stringa) ,n); 
         output.innerHTML += "<p>"   +  result  +"</p>"; 
         return result;
     }
