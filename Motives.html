@@ -127,7 +127,7 @@
                 if (inputElement) {
                     let valoreInput = Algebrite.expand(inputElement.value).toString(); 
                     
-                    outputElement.innerText = sviluppoProdotto(math.parse(valoreInput),h+1) ; // Mostra il valore dell'input nell'output
+                    outputElement.innerText =  sviluppoProdotto( math.parse(valoreInput),h+1) ; // Mostra il valore dell'input nell'output
                 } else {
                     console.log("Elemento con ID " + inputId + " non trovato");
                     outputElement.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
@@ -236,8 +236,9 @@
                         const secondPart = stringa.substring(indexT); // Parte della stringa dall'occorrenza in poi
                 
                      const indicePiu =  secondPart.indexOf('+') ; 
-                  if (indicePiu !== -1) { 
-                    return math.simplify(math.parse(secondPart.substring( indicePiu+1)));
+                  if (indicePiu !== -1) {
+                    
+                    return Algebrite.expand(secondPart.substring( indicePiu+1));
                   } 
                 else {
                     return "Il carattere '+' non è presente nella stringa.";
@@ -254,7 +255,8 @@ function sviluppoProdotto(p,a){
     var i =math.simplify(math.parse(a + "-" + "1"));
         var  funzione =sviluppoCompleto(p);
           let n = parseInt(document.getElementsByTagName("input").length-2);    
-     var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +i+" )").replace(/\+\s+-/g, "-")),n+2) ;    
+     var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +i+" )").replace(/\+\s+-/g, "-")),n+2) ;   
+        
      return  result ;
     }
     
