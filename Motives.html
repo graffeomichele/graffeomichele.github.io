@@ -212,10 +212,12 @@
                     var completo = 1;                    
                     for (var i = 0; i < parseInt(degreePolynomial(p ))+1 ; i++) {
                         console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
-                        var temp = (Algebrite.expand( sviluppoMonomio(estraiTermine(p,i, 'L'),parseInt(((n+1)/(a-1))+1) ))).toString();
-                        completo =      Algebrite.expand(   '(' + completo.toString() + ')*(' + temp + ')'  ); 
+                        var GIUSU = estraiTermine(p,i, 'L').split("*"); 
+                        var GIU = math.simplify(GIUSU[1]); 
+                        var temp = Algebrite.expand('(' + (Algebrite.expand( sviluppoMonomio(GIU,parseInt(((n+1)/(a-1))+1) ))).toString() + ')^'+GIUSU[0]).toString() ; 
+                        completo =      Algebrite.expand( truncate(  '(' + completo.toString() + ')*(' + temp + ')'  ,n ) );  
                 }
-                var  funzione = truncate(completo.toString(),n);
+                var  funzione = truncate(completo.toString(),n); 
                 var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +l+" )").replace(/\+\s+-/g, "-")),n-1) ;  
                 return  result ;
                                  
@@ -229,9 +231,21 @@
                 var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
                 
                 var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString()));
-                    
-                    return fattore; // Restituisce il valore calcolato invece di manipolare l'output direttamente
-                }
+                var stringa = fattore .toString();
+                  if (stringa.startsWith('L')) { 
+                    return "(1)*" + stringa; 
+                } else if (stringa.startsWith('-')) { 
+                    if (stringa.indexOf('*') === -1){
+                        return "1*(" +stringa + ")";
+                    }
+                    else{
+                        return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
+                    }
+              }else if (stringa.indexOf('L') === -1) { 
+                    return "(" + stringa + ")" + "* (1)";
+              } else { 
+                    return stringa;
+        }}
                 
                 function nthDerivative(f, n , a) {
                         var result =  f;
