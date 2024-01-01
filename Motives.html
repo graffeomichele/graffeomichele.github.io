@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -73,7 +74,9 @@
               mostraValoriButton.setAttribute("style", "margin-right: 5px;");
           
               mostraValoriButton.addEventListener("click", function() {
-                finale(); // Valore predefinito '1'
+                var fatto = finale(parseInt(document.getElementsByTagName("input").length-3)); // Valore predefinito '1'
+                output.innerHTML += "<p> <b> Motives:</b> "   +  fatto  +"</p>"; 
+                output.innerHTML += "<p><b> Euler characteristics:</b> "   +  serieCaratt(fatto.toString())  +"</p>"; 
               });
           
               buttonsContainer.appendChild(mostraValoriButton);
@@ -105,13 +108,14 @@
           
               setToZeroButton.addEventListener("click", function() { 
                 buttonsContainer.remove();
-                n = 5;
+                n = 6;
                 createInputFields();
                 document.getElementById("input_1").setAttribute("value", "1");
                 document.getElementById("input_2").setAttribute("value", "L+L^2");
                 document.getElementById("input_3").setAttribute("value", "L^2+L^3+L^4");
                 document.getElementById("input_4").setAttribute("value", "L^6 + 2*L^5 + L^4 + L^3 - L^2");
-                document.getElementById("input_5").setAttribute("value", "L^8 + 2*L^7 + 2*L^6 + L^5 - L^3"); 
+                document.getElementById("input_5").setAttribute("value", "L^8 + 2*L^7 + 2*L^6 + L^5 - L^3");  
+                document.getElementById("input_6").setAttribute("value", "L^10 + 3*L^9 + 4*L^8 + 3*L^7 - L^6 - 2*L^5 - 2*L^4"); 
                 
               });
               buttonsContainer.appendChild(setToZeroButton);
@@ -135,6 +139,7 @@
             moltiplica.setAttribute("style", "margin-top: 5px;margin-right: 5px; "); 
             moltiplica.addEventListener("click", function() {   
                 for (var i = 1 ; i<=n ;i++){
+                    console.log(n);
                     var fatto = "("+ document.getElementById("input_"+i).value +")*("+ inputa.value +")"
                 document.getElementById("input_"+i).setAttribute("value", fatto);
                 }
@@ -166,6 +171,46 @@
             varietyContainer.appendChild(Pn);
             varietyContainer.appendChild(inputPn);
             body.appendChild(varietyContainer);
+
+
+              
+            let newomegaContainer = document.createElement("div");
+            newomegaContainer.setAttribute("class", "inputContainer");
+
+            let testo = document.createElement("span");
+            testo.innerHTML = "<b>Insert the "+ math.simplify(n+1) +"-th motive: </b> ";
+            testo.setAttribute("style", "margin-left: 5px;");
+
+            let newMotive = document.createElement("input");
+            newMotive.setAttribute("type", "text");
+            newMotive.setAttribute("id", "newMotive");
+            newMotive.setAttribute("value", 1);
+            newMotive.setAttribute("style", "margin-top: 5px;margin-right: 5px; ");
+
+            let outputnewMotive = document.createElement("span");
+            outputnewMotive.setAttribute("id", "outputnewMotive");
+            outputnewMotive.setAttribute("style", "margin-left: 10px;");
+          
+
+            let calcolanewMotive = document.createElement("button");
+            calcolanewMotive.setAttribute("type", "button");
+            calcolanewMotive.setAttribute("id", "calcolanewMotive");
+            calcolanewMotive.textContent = "Compute Ω"+math.simplify(n+1);
+            calcolanewMotive.setAttribute("style", "margin-top: 5px;margin-right: 5px; "); 
+            calcolanewMotive.addEventListener("click", function() { 
+                var b = parseInt(document.getElementsByTagName("input").length-2);
+                var rifatto = Algebrite.expand( '(' +finale(b).toString()+ ')*(1+a*t^'+ b +')'); // Valore predefinito '1'
+                outputnewMotive.innerHTML += "<p>"   +  rifatto  +"</p>";
+                
+                
+              });
+
+              newomegaContainer.appendChild(testo);
+              newomegaContainer.appendChild(newMotive);
+              newomegaContainer.appendChild(calcolanewMotive);
+              newomegaContainer.appendChild(outputnewMotive);
+            body.appendChild(newomegaContainer);
+
           }
 
             createInputFields(); // Chiamata iniziale per creare i campi di input
@@ -181,7 +226,7 @@
                 if (inputElement) {
                     let valoreInput = Algebrite.expand(inputElement.value).toString(); 
                     
-                    outputElement.innerText =  sviluppoProdotto( math.parse(valoreInput),h+1) ; // Mostra il valore dell'input nell'output
+                    outputElement.innerText =  sviluppoProdotto( math.parse(valoreInput),h+1,parseInt(document.getElementsByTagName("input").length-2)) ; // Mostra il valore dell'input nell'output
                 } else {
                     console.log("Elemento con ID " + inputId + " non trovato");
                     outputElement.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
@@ -197,16 +242,16 @@
                         var sviluppo = math.parse('0');
                             for (var i = 0; i < n; i++) {
                         var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')'));
-                        sviluppo = sviluppo +'+'+ '(' + termine.toString().replace(/-/g, "(-1)*") + ')';
+                        console.log(i.toString()+ "e" +termine.toString());
+                        sviluppo = sviluppo +'+'+ '(' + termine.toString() + ')';
                         svuluppo = Algebrite.expand( sviluppo.toString() ).toString() ;
                             } 
                         var espansione = Algebrite.expand( sviluppo.toString() );  
                         return espansione;
                     }
                 
-            function sviluppoProdotto(p,a){
-                var l =math.simplify(math.parse(a + "-" + "1")); 
-                      let n = parseInt(document.getElementsByTagName("input").length-1);     
+            function sviluppoProdotto(p,a,n){
+                var l =math.simplify(math.parse(a + "-" + "1"));   
                     
                 if (p !== null) {
                     var completo = 1;                    
@@ -223,7 +268,7 @@
                                  
                 }
             } 
-            //.replace(/\+\s+-/g, "-")
+            //.replace(/\+\s+-/g, "-") 
             function estraiTermine(p, n , variable) {
                 var L=math.parse(variable);
                 var node = p;
@@ -231,21 +276,29 @@
                 var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
                 
                 var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString()));
-                var stringa = fattore .toString();
+                var stringa = fattore .toString().replace(")",'').replace("(",'');
                   if (stringa.startsWith('L')) { 
+                    console.log("a");
                     return "(1)*" + stringa; 
-                } else if (stringa.startsWith('-')) { 
+                } else if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) { 
                     if (stringa.indexOf('*') === -1){
+                        console.log("b");
                         return "1*(" +stringa + ")";
                     }
                     else{
+                        console.log("c");
                         return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
                     }
               }else if (stringa.indexOf('L') === -1) { 
+                console.log("d","(" + stringa + ")" + "* (1)");
                     return "(" + stringa + ")" + "* (1)";
               } else { 
+                console.log("e");
                     return stringa;
         }}
+                
+                
+                
                 
                 function nthDerivative(f, n , a) {
                         var result =  f;
@@ -327,9 +380,8 @@
                 
  
     
-    function finale(){
+    function finale(n){
         output.innerHTML = ''; // Pulisce l'output precedente
-        let n = parseInt(document.getElementsByTagName("input").length-2);  
         var stringa = "1";
         for(var h = n ; h>=1 ; h-- ){ 
            let inputId = "input_" + h.toString();
@@ -340,7 +392,7 @@
                 let inputElement = document.getElementById(inputId);
                 if (inputElement) {
                     let valoreInput = Algebrite.expand(inputElement.value).toString(); 
-                    stringa += "*(" + sviluppoProdotto(math.parse(valoreInput),h+1)+")"; 
+                    stringa += "*(" + sviluppoProdotto(math.parse(valoreInput),h+1,n+1)+")"; 
                     stringa =  "(" + truncate( Algebrite.expand(stringa) ,n).toString()+")";
                 } else {
                     console.log("Elemento con ID " + inputId + " non trovato");
@@ -351,15 +403,15 @@
             }
         } 
         var result = truncate( Algebrite.expand(stringa) ,n); 
-        output.innerHTML += "<p> <b> Motives:</b> "   +  result  +"</p>"; 
-        output.innerHTML += "<p><b> Euler characteristics:</b> "   +  serieCaratt(result.toString())  +"</p>"; 
         return result;
     }
     function serieCaratt(p){
         var result = p.replace(/L/g, "1");
         return result =  Algebrite.expand(result).toString();
     } 
- 
+    function nuovoOmega(){
+        
+    }
         window.onload = creaCaselleInput;
         
     </script>
