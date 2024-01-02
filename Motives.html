@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>CALCOLO MOTIVICO</title>
+    <title>MOTIVES</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
     <script src="https://cdn.rawgit.com/davidedc/Algebrite/master/dist/algebrite.bundle-for-browser.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -38,7 +37,7 @@
                 input.setAttribute("value", i);
                 input.setAttribute("style", "margin-left: 5px;margin-right: 5px; "); 
                 const screenWidth = window.innerWidth;
-                const seventyFivePercentScreenWidth = screenWidth * 0.3;
+                const seventyFivePercentScreenWidth = screenWidth * 0.75;
                 
                 input.style.width = `${seventyFivePercentScreenWidth}px`; 
           
@@ -119,6 +118,48 @@
                 
               });
               buttonsContainer.appendChild(setToZeroButton);
+
+              
+                    
+              let setP4 = document.createElement("button");
+              setP4.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>4</sup>)<sup>[n]</sup><sub>0</sub>';
+  
+              setP4.setAttribute("type", "button");
+              setP4.setAttribute("style", "margin-right: 5px;");
+          
+              setP4.addEventListener("click", function() { 
+                buttonsContainer.remove();
+                n = 5;
+                createInputFields();
+                document.getElementById("input_1").setAttribute("value", "1");
+                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3");
+                document.getElementById("input_3").setAttribute("value", "L^2+L^3+2*L^4+L^5+L^6");
+                document.getElementById("input_4").setAttribute("value", "L^9 + 2*L^8 + 3*L^7 + 3*L^6+2*L^5 - L^2"); 
+                document.getElementById("input_5").setAttribute("value", "L^12 + 2*L^11 + 4*L^10 + 5*L^9 +5 L^8 +2*L^7 - 2*L^5 - L^4-L^3"); 
+                
+              });
+              buttonsContainer.appendChild(setP4);
+ 
+                    
+              let setP5 = document.createElement("button");
+              setP5.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>5</sup>)<sup>[n]</sup><sub>0</sub>';
+  
+              setP5.setAttribute("type", "button");
+              setP5.setAttribute("style", "margin-right: 5px;");
+          
+              setP5.addEventListener("click", function() { 
+                buttonsContainer.remove();
+                n = 3;
+                createInputFields();
+                document.getElementById("input_1").setAttribute("value", "1");
+                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4");
+                document.getElementById("input_3").setAttribute("value", "L^8+L^7+2*L^6+2*L^5+2*L^4+L^3+L^2");
+                
+              });
+              buttonsContainer.appendChild(setP5);
+
+
+
                       
             body.appendChild(buttonsContainer);
             let texto = document.createElement("span");
@@ -138,8 +179,7 @@
             moltiplica.textContent = "Global motive";
             moltiplica.setAttribute("style", "margin-top: 5px;margin-right: 5px; "); 
             moltiplica.addEventListener("click", function() {   
-                for (var i = 1 ; i<=n ;i++){
-                    console.log(n);
+                for (var i = 1 ; i<=n ;i++){ 
                     var fatto = "("+ document.getElementById("input_"+i).value +")*("+ inputa.value +")"
                 document.getElementById("input_"+i).setAttribute("value", fatto);
                 }
@@ -227,8 +267,7 @@
                     let valoreInput = Algebrite.expand(inputElement.value).toString(); 
                     
                     outputElement.innerText =  sviluppoProdotto( math.parse(valoreInput),h+1,parseInt(document.getElementsByTagName("input").length-2)) ; // Mostra il valore dell'input nell'output
-                } else {
-                    console.log("Elemento con ID " + inputId + " non trovato");
+                } else { 
                     outputElement.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
                 }
             } else {
@@ -241,8 +280,7 @@
                         var t = math.parse('t');
                         var sviluppo = math.parse('0');
                             for (var i = 0; i < n; i++) {
-                        var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')'));
-                        console.log(i.toString()+ "e" +termine.toString());
+                        var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')')); 
                         sviluppo = sviluppo +'+'+ '(' + termine.toString() + ')';
                         svuluppo = Algebrite.expand( sviluppo.toString() ).toString() ;
                             } 
@@ -277,16 +315,13 @@
                 
                 var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString()));
                 var stringa = fattore .toString().replace(")",'').replace("(",'');
-                  if (stringa.startsWith('L')) { 
-                    console.log("a");
+                  if (stringa.startsWith('L')) {  
                     return "(1)*" + stringa; 
                 } else if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) { 
-                    if (stringa.indexOf('*') === -1){
-                        console.log("b");
+                    if (stringa.indexOf('*') === -1){ 
                         return "1*(" +stringa + ")";
                     }
-                    else{
-                        console.log("c");
+                    else{ 
                         return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
                     }
               }else if (stringa.indexOf('L') === -1) { 
