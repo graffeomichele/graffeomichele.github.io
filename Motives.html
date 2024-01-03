@@ -56,10 +56,20 @@
                 button.addEventListener("click", function() {
                   mostraValori(i);
                 });
+                let euler = document.createElement("button");
+                euler.innerHTML = "&chi;";
+                euler.setAttribute("style", "margin-left: 5px;");
+                euler.setAttribute("type", "button");
+          
+                euler.addEventListener("click", function() {  
+                    output.innerHTML = '';
+                    output.innerHTML = serieCaratt(input.value);
+                });
           
                 container.appendChild(omegaText);
                 container.appendChild(input);
                 container.appendChild(button);
+                container.appendChild(euler);
                 container.appendChild(output);
                 body.appendChild(container);
               }
@@ -129,13 +139,14 @@
           
               setP4.addEventListener("click", function() { 
                 buttonsContainer.remove();
-                n = 5;
+                n = 6;
                 createInputFields();
                 document.getElementById("input_1").setAttribute("value", "1");
                 document.getElementById("input_2").setAttribute("value", "L+L^2+L^3");
                 document.getElementById("input_3").setAttribute("value", "L^2+L^3+2*L^4+L^5+L^6");
                 document.getElementById("input_4").setAttribute("value", "L^9 + 2*L^8 + 3*L^7 + 3*L^6+2*L^5 - L^2"); 
-                document.getElementById("input_5").setAttribute("value", "L^12 + 2*L^11 + 4*L^10 + 5*L^9 +5 L^8 +2*L^7 - 2*L^5 - L^4-L^3"); 
+                document.getElementById("input_5").setAttribute("value", "L^12 + 2*L^11 + 4*L^10 + 5*L^9 +5 L^8 +2*L^7 - 2*L^5 - L^4-L^3");  
+                document.getElementById("input_6").setAttribute("value", "L^15+3*L^14+7*L^13+10*L^12+11*L^11+7*L^10+L^9-6*L^8-6*L^7-6*L^6-L^5-L^4"); 
                 
               });
               buttonsContainer.appendChild(setP4);
@@ -149,14 +160,65 @@
           
               setP5.addEventListener("click", function() { 
                 buttonsContainer.remove();
-                n = 3;
+                n = 6;
                 createInputFields();
                 document.getElementById("input_1").setAttribute("value", "1");
                 document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4");
                 document.getElementById("input_3").setAttribute("value", "L^8+L^7+2*L^6+2*L^5+2*L^4+L^3+L^2");
+                document.getElementById("input_4").setAttribute("value", "L^12+2*L^11+3*L^10+5*L^9+4*L^8+4*L^7+2*L^6+L^5-L^4-L^2");
+                document.getElementById("input_5").setAttribute("value", "L^16+2L^15+4L^14+7L^13+9L^12+9L^11+8L^10+4L^9+L^8-2L^7-3L^6-3L^5-L^4-L^3");
+                document.getElementById("input_6").setAttribute("value", "L^20+3*L^19+7*L^18+13*L^17+18*L^16+22*L^15+21*L^14+15*L^13+4*L^12-4*L^11-12*L^10-13*L^9-12*L^8-7*L^7-4*L^6-L^4");
                 
               });
               buttonsContainer.appendChild(setP5);
+ 
+                    
+              let setP6 = document.createElement("button");
+              setP6.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>6</sup>)<sup>[n]</sup><sub>0</sub>';
+              
+  
+              setP6.setAttribute("type", "button");
+              setP6.setAttribute("style", "margin-right: 5px;");
+          
+              setP6.addEventListener("click", function() { 
+                buttonsContainer.remove();
+                n = 6;
+                createInputFields();
+                document.getElementById("input_1").setAttribute("value", "1");
+                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4+L^5");
+                document.getElementById("input_3").setAttribute("value", "L^10+L^9+2*L^8+2*L^7+3*L^6+2*L^5+2*L^4+L^3+L^2");
+                document.getElementById("input_4").setAttribute("value", "L^15+2*L^14+3*L^13+5*L^12+6*L^11+6*L^10+6*L^9+4*L^8+3*L^7+L^6-L^4-L^2");
+                document.getElementById("input_5").setAttribute("value", "L^20+2*L^19+4*L^18+7*L^17+11*L^16+13*L^15+15*L^14+14*L^13+12*L^12+7*L^11+3*L^10-2*L^9-3*L^8-5*L^7-4*L^6-3*L^5-L^4-L^3");
+                document.getElementById("input_6").setAttribute("value", "L^25+3*L^24+7*L^23+13*L^22+21*L^21+29*L^20+36*L^19+38*L^18+36*L^17+26*L^16+15*L^15-L^14-11*L^13-22*L^12-22*L^11-22*L^10-15*L^9-12*L^8-5*L^7-3*L^6-L^4");
+
+                
+              });
+              buttonsContainer.appendChild(setP6);
+
+
+ 
+                    
+              let setP7 = document.createElement("button");
+              setP7.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>7</sup>)<sup>[n]</sup><sub>0</sub>';
+              
+  
+              setP7.setAttribute("type", "button");
+              setP7.setAttribute("style", "margin-right: 5px;");
+          
+              setP7.addEventListener("click", function() { 
+                buttonsContainer.remove();
+                n = 6;
+                createInputFields();
+                document.getElementById("input_1").setAttribute("value", "1");
+                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4+L^5+L^6"); 
+                document.getElementById("input_3").setAttribute("value", "L^12+L^11+2*L^10+2*L^9+3*L^8+3*L^7+3*L^6+2*L^5+2*L^4+L^3+L^2");
+                document.getElementById("input_4").setAttribute("value", "L^18+2*L^17+3*L^16+5*L^15+6*L^14+8*L^13+8*L^12+8*L^11+6*L^10+6*L^9+3*L^8+2*L^7-L^4-L^2"); 
+                document.getElementById("input_5").setAttribute("value", "L^24+2*L^23+4*L^22+7*L^21+11*L^20+15*L^19+19*L^18+21*L^17+22*L^16+20*L^15+17*L^14+11*L^13+6*L^12-3*L^10-6*L^9-6*L^8-6*L^7-4*L^6-3*L^5-L^4-L^3"); 
+                document.getElementById("input_6").setAttribute("value", "L^30+3*L^29+7*L^28+13*L^27+21*L^26+32*L^25+43*L^24+53*L^23+59*L^22+61*L^21+56*L^20+46*L^19+28*L^18+11*L^17-8*L^16-21*L^15-33*L^14-35*L^13-36*L^12-28*L^11-23*L^10-15*L^9-10*L^8-4*L^7-3*L^6-L^4"); 
+                
+                
+              });
+              buttonsContainer.appendChild(setP7);
 
 
 
@@ -296,8 +358,10 @@
                     for (var i = 0; i < parseInt(degreePolynomial(p ))+1 ; i++) {
                         console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
                         var GIUSU = estraiTermine(p,i, 'L').split("*"); 
-                        var GIU = math.simplify(GIUSU[1]); 
-                        var temp = Algebrite.expand('(' + (Algebrite.expand( sviluppoMonomio(GIU,parseInt(((n+1)/(a-1))+1) ))).toString() + ')^'+GIUSU[0]).toString() ; 
+                        var GIU = math.simplify(GIUSU[1]);
+                        var SU = math.simplify(GIUSU[0].replace('.999999999999998','+1').replace('.99999999999999','+1')); 
+                        console.log(GIUSU.toString(),SU.toString());
+                        var temp = Algebrite.expand('(' + (Algebrite.expand( sviluppoMonomio(GIU,parseInt(((n+1)/(a-1))+1) ))).toString() + ')^'+ SU).toString() ; 
                         completo =      Algebrite.expand( truncate(  '(' + completo.toString() + ')*(' + temp + ')'  ,n ) );  
                 }
                 var  funzione = truncate(completo.toString(),n); 
@@ -441,7 +505,7 @@
         return result;
     }
     function serieCaratt(p){
-        var result = p.replace(/L/g, "1");
+        var result = p.replace(/L/g, "(1)");
         return result =  Algebrite.expand(result).toString();
     } 
     function nuovoOmega(){
