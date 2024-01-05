@@ -359,7 +359,7 @@
                         console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
                         var GIUSU = estraiTermine(p,i, 'L').split("*"); 
                         var GIU = math.simplify(GIUSU[1]);
-                        var SU = math.simplify(GIUSU[0].replace('.999999999999998','+1').replace('.99999999999999','+1')); 
+                        var SU = math.simplify(GIUSU[0]); 
                         console.log(GIUSU.toString(),SU.toString());
                         var temp = Algebrite.expand('(' + (Algebrite.expand( sviluppoMonomio(GIU,parseInt(((n+1)/(a-1))+1) ))).toString() + ')^'+ SU).toString() ; 
                         completo =      Algebrite.expand( truncate(  '(' + completo.toString() + ')*(' + temp + ')'  ,n ) );  
@@ -371,7 +371,7 @@
                 }
             } 
             //.replace(/\+\s+-/g, "-") 
-            function estraiTermine(p, n , variable) {
+            function estraiTermines(p, n , variable) {
                 var L=math.parse(variable);
                 var node = p;
                 var grado = parseInt(n);
@@ -395,6 +395,43 @@
                 console.log("e");
                     return stringa;
         }}
+                
+            function estraiTermine(p, n , variable) {
+                var L=math.parse(variable);
+                var node = p;
+                var grado = parseInt(n);
+                var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
+                der = Math.round(parseFloat(der)).toString();
+                var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString())).toString(); 
+                var stringa = fattore .toString().replace(")",'').replace("(",'');
+                  if (stringa.indexOf('L') === -1) {
+                    if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) {  
+                        if (stringa.indexOf('*') === -1){ 
+                        return "1*(" +stringa + ")";
+                    }
+                    else{ 
+                        return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
+                    }
+                    }else{
+                        console.log("d","(" + stringa + ")" + "* (1)");
+                            return "(" + stringa + ")" + "* (1)";
+                    }
+                    } else {  
+                        if (stringa.startsWith('L')) {  
+                            return "(1)*" + stringa; 
+                        } else if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) {
+                            if (stringa.indexOf('*') === -1){ 
+                            return "1*(" +stringa + ")";
+                        }
+                        else{ 
+                            return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
+                        }
+                        }else{
+                            console.log("e");
+                                return stringa;
+                        }
+                    }
+                }
                 
                 
                 
