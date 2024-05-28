@@ -16,7 +16,8 @@
     </style>
 </head>
 <body>
-    <h1><b>Grassmannians</b></h1>
+    <center><h1><b>Motives Calculator</b></h1></center>
+    <h2><b>Grassmannians</b></h2>
     <form id="polynomial-form">
         <label for="polynomial1">k:</label>
         <input type="text" id="polynomial1" name="polynomial1" required> 
@@ -27,7 +28,7 @@
     </form>
     <div class="result" id="result"></div>
     <br><br>
-    <h1><b>Hilbert schemes</b></h1>
+    <h2><b>Hilbert schemes</b></h2>
     <form id="polynomial-formHilb">
         <label for="polynomial3">d:</label>
         <input type="text" id="polynomial3" name="polynomial3" required> 
@@ -38,7 +39,7 @@
     </form>
     <div class="result" id="resultHilb"></div>
     <br><br>
-    <h1><b>Exact embedding dimension</b></h1>
+    <h2><b>Exact embedding dimension</b></h2>
     <form id="polynomial-formY">
         <label for="polynomial5">d:</label>
         <input type="text" id="polynomial5" name="polynomial5" required> 
@@ -49,7 +50,7 @@
     </form>
     <div class="result" id="resultY"></div>
     <br><br>
-    <h1><b>Omega</b></h1>
+    <h2><b>Omega</b></h2>
     <form id="polynomial-formOmega">
         <label for="polynomial7">d:</label>
         <input type="text" id="polynomial7" name="polynomial7" required> 
@@ -60,7 +61,7 @@
     </form>
     <div class="result" id="resultOmega"></div>
     <br><br>
-    <h1><b>Quot</b></h1>
+    <h2><b>Quot</b></h2>
     <form id="polynomial-formQuot">
         <label for="polynomial9">d:</label>
         <input type="text" id="polynomial9" name="polynomial9" required> 
@@ -89,7 +90,7 @@
             var d = parseInt(document.getElementById('polynomial3').value);
             var n = parseInt(document.getElementById('polynomial4').value);
 
-            document.getElementById('resultHilb').innerText = '[Hilb^' + d + '(𝔸^' + n + ')_0]= ' + sostituisciLConAsterisco( hilbertScheme(d, n));
+            document.getElementById('resultHilb').innerHTML = '[Hilb<sup>' + d + '</sup>(𝔸<sup>' + n + '</sup>)<sub>0</sub>]= ' + sostituisciLConAsterisco( hilbertScheme(d, n));
         });
 
         document.getElementById('polynomial-formY').addEventListener('submit', function(event) {
@@ -97,7 +98,7 @@
 
             var d = parseInt(document.getElementById('polynomial5').value);
             var k = parseInt(document.getElementById('polynomial6').value); 
-            document.getElementById('resultY').innerText = '[Y^' +k + '_(' + k+' , '+d + ')]= ' + sostituisciLConAsterisco( Ykkd(d, k));
+            document.getElementById('resultY').innerHTML = '[Y<sup>' +k + '</sup><sub>' + k+' , '+d + '</sub>]= ' + sostituisciLConAsterisco( Ykkd(d, k));
         });
 
         document.getElementById('polynomial-formOmega').addEventListener('submit', function(event) {
@@ -105,7 +106,7 @@
 
             var d = parseInt(document.getElementById('polynomial7').value);
             var k = parseInt(document.getElementById('polynomial8').value); 
-            document.getElementById('resultOmega').innerText = 'Ω^' +k + '_' + d + '= ' + sostituisciLConAsterisco( Omega(d, k));
+            document.getElementById('resultOmega').innerHTML = 'Ω<sup>' +k + '</sup><sub>' + d + '</sub>= ' + sostituisciLConAsterisco( Omega(d, k));
         });
 
         document.getElementById('polynomial-formQuot').addEventListener('submit', function(event) {
@@ -114,7 +115,7 @@
             var d = parseInt(document.getElementById('polynomial9').value);
             var n = parseInt(document.getElementById('polynomial10').value); 
             var r = parseInt(document.getElementById('polynomial11').value); 
-            document.getElementById('resultQuot').innerText = '[(Quot^' +d + '_' + r + '(𝔸^' + n +  '))_0]= ' + sostituisciLConAsterisco( Quot(n,r,d).toString());
+            document.getElementById('resultQuot').innerHTML = '[(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub>]= ' + sostituisciLConAsterisco( Quot(n,r,d).toString());
         });
 
         
