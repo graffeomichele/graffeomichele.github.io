@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motives</title>
+    <script src="polynomial.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .result {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1><b>Grassmannians</b></h1>
+    <form id="polynomial-form">
+        <label for="polynomial1">k:</label>
+        <input type="text" id="polynomial1" name="polynomial1" required> 
+        <label for="polynomial2">n:</label>
+        <input type="text" id="polynomial2" name="polynomial2" required>
+        <br><br>
+        <button type="submit">Calculate [Gr(k,n)]</button>
+    </form>
+    <div class="result" id="result"></div>
+    <br><br>
+    <h1><b>Hilbert schemes</b></h1>
+    <form id="polynomial-formHilb">
+        <label for="polynomial3">d:</label>
+        <input type="text" id="polynomial3" name="polynomial3" required> 
+        <label for="polynomial4">n:</label>
+        <input type="text" id="polynomial4" name="polynomial4" required>
+        <br><br>
+        <button type="submit">Calculate [Hilb<sup>d</sup>( <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0</sub> ]</button>
+    </form>
+    <div class="result" id="resultHilb"></div>
+    <br><br>
+    <h1><b>Exact embedding dimension</b></h1>
+    <form id="polynomial-formY">
+        <label for="polynomial5">d:</label>
+        <input type="text" id="polynomial5" name="polynomial5" required> 
+        <label for="polynomial6">k:</label>
+        <input type="text" id="polynomial6" name="polynomial6" required>
+        <br><br>
+        <button type="submit">Calculate [Y<sup>k</sup><sub>k,d</sub> ]</button>
+    </form>
+    <div class="result" id="resultY"></div>
+    <br><br>
+    <h1><b>Omega</b></h1>
+    <form id="polynomial-formOmega">
+        <label for="polynomial7">d:</label>
+        <input type="text" id="polynomial7" name="polynomial7" required> 
+        <label for="polynomial8">n:</label>
+        <input type="text" id="polynomial8" name="polynomial8" required>
+        <br><br>
+        <button type="submit">Calculate [Ω<sup>n</sup><sub>d</sub> ]</button>
+    </form>
+    <div class="result" id="resultOmega"></div>
+    <br><br>
+    <h1><b>Quot</b></h1>
+    <form id="polynomial-formQuot">
+        <label for="polynomial9">d:</label>
+        <input type="text" id="polynomial9" name="polynomial9" required> 
+        <label for="polynomial10">n:</label>
+        <input type="text" id="polynomial10" name="polynomial10" required>
+        <label for="polynomial11">r:</label>
+        <input type="text" id="polynomial11" name="polynomial11" required>
+        <br><br>
+        <button type="submit">Calculate [(Quot<sup>d</sup><sub>r </sub> <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0 </sub>]</button>
+    </form>
+    <div class="result" id="resultQuot"></div>
+
+    <script>
+        document.getElementById('polynomial-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var k = parseInt(document.getElementById('polynomial1').value);
+            var n = parseInt(document.getElementById('polynomial2').value);
+
+            document.getElementById('result').innerText = '[Gr('+  k + ',' + n + ')]= ' +sostituisciLConAsterisco( grassmanniana(k, n));
+        });
+
+        document.getElementById('polynomial-formHilb').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var d = parseInt(document.getElementById('polynomial3').value);
+            var n = parseInt(document.getElementById('polynomial4').value);
+
+            document.getElementById('resultHilb').innerText = '[Hilb^' + d + '(𝔸^' + n + ')_0]= ' + sostituisciLConAsterisco( hilbertScheme(d, n));
+        });
+
+        document.getElementById('polynomial-formY').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var d = parseInt(document.getElementById('polynomial5').value);
+            var k = parseInt(document.getElementById('polynomial6').value); 
+            document.getElementById('resultY').innerText = '[Y^' +k + '_(' + k+' , '+d + ')]= ' + sostituisciLConAsterisco( Ykkd(d, k));
+        });
+
+        document.getElementById('polynomial-formOmega').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var d = parseInt(document.getElementById('polynomial7').value);
+            var k = parseInt(document.getElementById('polynomial8').value); 
+            document.getElementById('resultOmega').innerText = 'Ω^' +k + '_' + d + '= ' + sostituisciLConAsterisco( Omega(d, k));
+        });
+
+        document.getElementById('polynomial-formQuot').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var d = parseInt(document.getElementById('polynomial9').value);
+            var n = parseInt(document.getElementById('polynomial10').value); 
+            var r = parseInt(document.getElementById('polynomial11').value); 
+            document.getElementById('resultQuot').innerText = '[(Quot^' +d + '_' + r + '(𝔸^' + n +  '))_0]= ' + sostituisciLConAsterisco( Quot(n,r,d).toString());
+        });
+
+        
+        function fattoriale(p){
+            var p1 = new Polynomial('1'); 
+            for(var h = 1 ; h<=p ; h++ ){
+                p1=p1.mul('L^'+h+'-1') 
+            }
+            return p1.toString()
+        }
+        function grassmanniana(k,n){
+            if(k>n) return "0";
+            if(n<0) return "0";
+            if(k<0) return "0";
+            var p1 = Polynomial(fattoriale(n))
+            var p2 = Polynomial(fattoriale(k))
+            var p3 = Polynomial(fattoriale(n-k))
+            p1=p1.div(p2)
+            p1=p1.div(p3)
+            return p1.toString()
+        } 
+
+        function hilbertScheme(d, n) {
+            if(d==1) return "1";
+            if(n<1) return "0";
+            lista = [
+            ["1"],//d=2
+            ["1","L^2+L+1"],//d=3
+            ["1","L^3+2L^2+L+1","L^6+2L^5+3L^4+3L^3+2L^2+L+1"],//d=4
+            ["1","L^4+2L^3+2L^2+L+1","L^8+2L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^12+2L^11+4L^10+7L^9+9L^8+9L^7+9L^6+6L^5+5L^4+3L^3+2L^2+L+1"],//d=5
+            ["1","L^5+3L^4+3L^3+2L^2+L+1","L^10+3L^9+7L^8+9L^7+9L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^15+3L^14+7L^13+13L^12+17L^11+20L^10+20L^9+17L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^20+3L^19+7L^18+13L^17+21L^16+28L^15+34L^14+37L^13+37L^12+33L^11+29L^10+23L^9+18L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=6
+            ["1","L^6+3L^5+4L^4+3L^3+2L^2+L+1","L^12+3L^11+8L^10+14L^9+16L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^18+3L^17+9L^16+19L^15+30L^14+38L^13+44L^12+39L^11+34L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^24+3L^23+9L^22+20L^21+36L^20+54L^19+73L^18+85L^17+91L^16+88L^15+81L^14+68L^13+57L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^30+3L^29+9L^28+20L^27+37L^26+60L^25+90L^24+116L^23+143L^22+160L^21+172L^20+168L^19+162L^18+144L^17+128L^16+107L^15+89L^14+71L^13+58L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=7
+            ["1","L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^14+4L^13+12L^12+22L^11+28L^10+27L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^21+5L^20+15L^19+34L^18+55L^17+76L^16+88L^15+87L^14+77L^13+64L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^28+6L^27+18L^26+40L^25+74L^24+114L^23+158L^22+193L^21+214L^20+217L^19+207L^18+183L^17+157L^16+129L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^35+6L^34+19L^33+43L^32+82L^31+137L^30+206L^29+280L^28+351L^27+409L^26+448L^25+462L^24+452L^23+425L^22+385L^21+339L^20+289L^19+244L^18+200L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+231L^36+332L^35+449L^34+566L^33+678L^32+770L^31+840L^30+870L^29+875L^28+848L^27+801L^26+733L^25+660L^24+578L^23+503L^22+428L^21+361L^20+299L^19+248L^18+201L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"]//d=8
+            ];
+            motive=Polynomial("0");
+            for(var g = 1 ; g<=d-1 ; g++ ){ 
+                coe = 0;
+                for(var j = 0 ; j<= d-g-1 ; j++){   
+                    tempo = (Polynomial(grassmanniana(d-1,d-j-g+n-1)));
+                    tempo= tempo.mul(grassmanniana(j,d));
+                    tempo=tempo.mul(Polynomial("L^"+(calcolaCoefficiente(j,2))));
+                if(j%2==1) {  
+                    tempo= tempo.mul(Polynomial("-1"));   
+                }
+                coe=Polynomial(coe).add(tempo); 
+                
+            } 
+            coe=coe.mul(Polynomial(lista[d-2][g-1]));   
+                motive=motive.add(coe);  
+            }  
+            return motive.toString();
+        }
+        function calcolaCoefficiente(n, k) {
+            // Usando l'approccio del fattoriale
+            if(k>n) return 0;
+            if(n<0) return 0;
+            if(k<0) return 0;
+            return fattorial(n) / (fattorial(k) * fattorial(n - k));
+        }
+
+        function fattorial(numero) {
+            var risultato = 1;
+            for (var i = 2; i <= numero; i++) {
+                risultato *= i;
+            }
+            return risultato;
+        }
+        function sostituisciLConAsterisco(input) {
+            // Usa una regex per trovare tutte le occorrenze di un numero seguito da "L"
+            return input.replace(/(\d)L/g, '$1*L');
+        }
+        function Ykkd(d,k) {
+            if (k>=d) return "0";
+            if (k==0 & d==1) return "1";
+            if (d==1) return "0";
+            if (k<0) return "0";
+            if((d-k)==1) return "1";
+            if((d-k)==2) return grassmanniana(1,calcolaCoefficiente(k+1,2));
+            if((d-k)==3) {
+                sk = calcolaCoefficiente(k+1,2);
+                ssk=sk-1
+                tempo1 = Polynomial(grassmanniana(2,sk));
+                tempo2 = Polynomial(grassmanniana(1,k)).mul("L^"+ssk);
+                tempo1 = tempo1.add(tempo2.toString())
+                return tempo1.toString();
+            }
+            if((d-k)==4) {
+                sk = calcolaCoefficiente(k+1,2);
+                sk1=sk-1;
+                sk2=sk-2;
+                ssk = calcolaCoefficiente(k+2,2) -3;
+                tempo1 = Polynomial(grassmanniana(3,sk));
+                tempo2 = Polynomial(grassmanniana(1,k)).mul("L^"+ssk);
+                tempo3 = Polynomial(grassmanniana(1,k)).mul(grassmanniana(1,sk1)).mul("L^"+sk2);
+                tempo4 = Polynomial(grassmanniana(2,k)).mul("L^3+L^2").mul("L^"+sk2);
+                tempo1 = tempo1.add(tempo2.toString()).add(tempo3.toString()).add(tempo4.toString())
+                return tempo1.toString();
+            }
+            if((d-k)==5) { 
+                a= (k-1)*(k+6)/2;
+                b=calcolaCoefficiente(k+1,2);
+                c=((k-1)*(k+4)/2) -1;
+                d=((k-1)*(k+4)/2) ;
+                e=2*(b-2) ;
+                f= (b-2) ;
+                g= (b-1) ;
+                h= (b-3) ;
+                mot= Polynomial(grassmanniana(1,k)).mul("L^"+a);
+                coe=Polynomial(grassmanniana(1,k)).mul(grassmanniana(1,b-1));
+                tempo=Polynomial(grassmanniana(2,k)).mul(grassmanniana(1,2)).mul(grassmanniana(1,2));
+                tempo= tempo.mul(Polynomial("-1"));   
+                coe=coe.add(tempo);
+                coe=coe.mul("L^"+c);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(2,k)).mul(grassmanniana(1,2)).mul(grassmanniana(1,2));
+                coe=coe.mul("L^"+d);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(2,k)).mul(grassmanniana(2,3));
+                coe=coe.mul("L^"+e);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(3,k)).mul("L^9+L^8+L^7+L^6-L^4-L^3-L^2")
+                tempo=Polynomial(grassmanniana(2,k)).mul("L^3+L^2").mul(grassmanniana(1,f));
+                coe=coe.add(tempo);
+                tempo=Polynomial(grassmanniana(1,k)).mul(grassmanniana(2,g))
+                coe=coe.add(tempo);
+                coe=coe.mul("L^"+h);
+
+                mot=mot.add(coe.toString());
+                mot=mot.add(grassmanniana(4,calcolaCoefficiente(k+1,2)));
+                return mot.toString();
+            }
+            somma = Polynomial("0");
+            lista = [
+            ["1"],//d=2
+            ["1","L^2+L+1"],//d=3
+            ["1","L^3+2L^2+L+1","L^6+2L^5+3L^4+3L^3+2L^2+L+1"],//d=4
+            ["1","L^4+2L^3+2L^2+L+1","L^8+2L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^12+2L^11+4L^10+7L^9+9L^8+9L^7+9L^6+6L^5+5L^4+3L^3+2L^2+L+1"],//d=5
+            ["1","L^5+3L^4+3L^3+2L^2+L+1","L^10+3L^9+7L^8+9L^7+9L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^15+3L^14+7L^13+13L^12+17L^11+20L^10+20L^9+17L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^20+3L^19+7L^18+13L^17+21L^16+28L^15+34L^14+37L^13+37L^12+33L^11+29L^10+23L^9+18L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=6
+            ["1","L^6+3L^5+4L^4+3L^3+2L^2+L+1","L^12+3L^11+8L^10+14L^9+16L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^18+3L^17+9L^16+19L^15+30L^14+38L^13+44L^12+39L^11+34L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^24+3L^23+9L^22+20L^21+36L^20+54L^19+73L^18+85L^17+91L^16+88L^15+81L^14+68L^13+57L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^30+3L^29+9L^28+20L^27+37L^26+60L^25+90L^24+116L^23+143L^22+160L^21+172L^20+168L^19+162L^18+144L^17+128L^16+107L^15+89L^14+71L^13+58L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=7
+            ["1","L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^14+4L^13+12L^12+22L^11+28L^10+27L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^21+5L^20+15L^19+34L^18+55L^17+76L^16+88L^15+87L^14+77L^13+64L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^28+6L^27+18L^26+40L^25+74L^24+114L^23+158L^22+193L^21+214L^20+217L^19+207L^18+183L^17+157L^16+129L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^35+6L^34+19L^33+43L^32+82L^31+137L^30+206L^29+280L^28+351L^27+409L^26+448L^25+462L^24+452L^23+425L^22+385L^21+339L^20+289L^19+244L^18+200L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+231L^36+332L^35+449L^34+566L^33+678L^32+770L^31+840L^30+870L^29+875L^28+848L^27+801L^26+733L^25+660L^24+578L^23+503L^22+428L^21+361L^20+299L^19+248L^18+201L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"]//d=8
+            ];
+            for (var j=1; j<= k ;j++)
+            {
+            coe=Polynomial(grassmanniana(j,k));
+            esp= (k-j)*(d-j-1)-calcolaCoefficiente(k-j,2);  
+            coe=coe.mul("L^"+esp);
+            if((k+j)%2==1) {  
+                coe= coe.mul(Polynomial("-1"));   
+            } 
+            coe=coe.mul(lista[d-2][j-1]); 
+            somma =somma.add(coe);
+            }
+            return somma.toString();
+        } 
+
+        function Omega(d, n) {
+            if(n==1 & d >1) return "0";
+            if(n==1 ) return "1";
+            if(n==2) return "L^"+(d-1);
+            if(n<1) return "0";
+            lista = [["0","L^2"], // d=3
+            ["0","L^3","L^6+2L^5+L^4+L^3-L^2"],// d=4
+            ["0","L^4","L^8+2L^7+2L^6+L^5-L^3","L^12+2L^11+4L^10+5L^9+5L^8+2L^7-2L^5-L^4-L^3"],// d=5
+            ["0","L^5","L^10+3L^9+4L^8+3L^7-L^6-2L^5-2L^4","L^15+3L^14+7L^13+10L^12+11L^11+7L^10+L^9-6L^8-6L^7-6L^6-L^5-L^4","L^20+3L^19+7L^18+13L^17+18L^16+22L^15+21L^14+15L^13+4L^12-4L^11-12L^10-13L^9-12L^8-7L^7-4L^6-L^4"],// d=6
+            ["0","L^6","L^12+3L^11+5L^10+5L^9-4L^7-3L^6-L^5+L^4","L^18+3L^17+9L^16+16L^15+21L^14+17L^13+8L^12-8L^11-16L^10-17L^9-9L^8-3L^7+2L^6+L^5+L^4","L^24+3L^23+9L^22+20L^21+33L^20+45L^19+52L^18+44L^17+26L^16-24L^14-41L^13-42L^12-36L^11-21L^10-9L^9+3L^7+4L^6+L^5+L^4","L^30+3L^29+9L^28+20L^27+37L^26+57L^25+81L^24+95L^23+102L^22+90L^21+66L^20+25L^19-14L^18-55L^17-78L^16-89L^15-81L^14-66L^13-42L^12-23L^11-6L^10+L^9+6L^8+5L^7+4L^6+L^5+L^4"],// d=7
+            ["0","L^7","L^14+4L^13+8L^12+10L^11+2L^10-7L^9-10L^8-3L^7+L^6+2L^5","2L^21+5L^20+15L^19+30L^18+43L^17+42L^16+24L^15-11L^14-37L^13-51L^12-35L^11-16L^10+4L^9+8L^8+8L^7+2L^6+L^5","2L^28+6L^27+18L^26+40L^25+70L^24+102L^23+124L^22+121L^21+85L^20+26L^19-49L^18-106L^17-138L^16-130L^15-99L^14-50L^13-13L^12+16L^11+23L^10+21L^9+13L^8+7L^7+L^6+L^5","2L^35+6L^34+19L^33+43L^32+82L^31+133L^30+194L^29+246L^28+279L^27+272L^26+226L^25+128L^24+12L^23-121L^22-224L^21-300L^20-312L^19-291L^18-220L^17-145L^16-62L^15-6L^14+36L^13+47L^12+48L^11+34L^10+24L^9+12L^8+6L^7+L^6+L^5","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+227L^36+320L^35+415L^34+494L^33+541L^32+540L^31+475L^30+352L^29+177L^28-22L^27-234L^26-413L^25-553L^24-615L^23-622L^22-558L^21-459L^20-323L^19-199L^18-79L^17+2L^16+62L^15+84L^14+89L^13+73L^12+57L^11+37L^10+23L^9+11L^8+6L^7+L^6+L^5"]// d=8
+            ];
+            motive=Polynomial("0");
+            for(var g = 1 ; g<=d-1 ; g++ ){ 
+                coe = 0;
+                for(var j = 0 ; j<= d-g-1 ; j++){   
+                    tempo = (Polynomial(grassmanniana(d-1,d-j-g+n-1)));
+                    tempo= tempo.mul(grassmanniana(j,d));
+                    tempo=tempo.mul(Polynomial("L^"+(calcolaCoefficiente(j,2))));
+                if(j%2==1) {  
+                    tempo= tempo.mul(Polynomial("-1"));   
+                }
+                coe=Polynomial(coe).add(tempo); 
+                
+            } 
+            coe=coe.mul(Polynomial(lista[d-3][g-1]));   
+                motive=motive.add(coe);  
+            }  
+            return motive.toString();
+        }
+        function Quot(n,r,d){
+            if (d==1) { return grassmanniana(1,r);}
+            if (d==2) {
+                a=r-1; 
+                mot= Polynomial(grassmanniana(1,n)).mul(grassmanniana(1,r)).mul("L^"+a);
+                mot=Polynomial(mot).add(grassmanniana(2,r));
+                return mot}
+            if (d==3) { 
+                a= 2*(r-1);
+                b= r-2;
+                H1=Polynomial(hilbertScheme(3,n)).mul(grassmanniana(1,r)).mul("L^"+a);  
+                H2=Polynomial(grassmanniana(2,r)).mul(grassmanniana(1,2*n)).mul("L^"+b);  
+                H3=Polynomial(grassmanniana(3,r));
+                return H1.add(H2.toString()).add(H3.toString()).toString();
+            } 
+        }
+    </script>
+</body>
+</html>
