@@ -1,560 +1,323 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MOTIVES</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
-    <script src="https://cdn.rawgit.com/davidedc/Algebrite/master/dist/algebrite.bundle-for-browser.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motives</title>
+    <script src="polynomial.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .result {
+            margin-top: 10px;
+        }
+    </style>
 </head>
-<body><h1>Computation of motives given &Omega;<sub>i</sub></h1>
-    <p> Currently, given the known  &Omega;<sub>i</sub>, the program computes the motives as far as possible. It is possible to check product factors by clicking the button to the right of each input box.</p>
-    <div id="output"></div> 
-      
-      
+<body>
+    <center><h1><b>Motives Calculator</b></h1></center>
+    <h2><b>Grassmannians</b></h2>
+    <form id="polynomial-form">
+        <label for="polynomial1">k:</label>
+        <input type="text" id="polynomial1" name="polynomial1" required> 
+        <label for="polynomial2">n:</label>
+        <input type="text" id="polynomial2" name="polynomial2" required>
+        <br><br>
+        <button type="submit">Calculate [Gr(k,n)]</button>
+    </form>
+    <div class="result" id="result"></div>
+    <br><br>
+    <h2><b>Hilbert schemes</b></h2>
+    <form id="polynomial-formHilb">
+        <label for="polynomial3">d:</label>
+        <input type="text" id="polynomial3" name="polynomial3" required> 
+        <label for="polynomial4">n:</label>
+        <input type="text" id="polynomial4" name="polynomial4" required>
+        <br><br>
+        <button type="submit">Calculate [Hilb<sup>d</sup>( <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0</sub> ]</button>
+    </form>
+    <div class="result" id="resultHilb"></div>
+    <br><br>
+    <h2><b>Exact embedding dimension</b></h2>
+    <form id="polynomial-formY">
+        <label for="polynomial5">d:</label>
+        <input type="text" id="polynomial5" name="polynomial5" required> 
+        <label for="polynomial6">k:</label>
+        <input type="text" id="polynomial6" name="polynomial6" required>
+        <br><br>
+        <button type="submit">Calculate [Y<sup>k</sup><sub>k,d</sub> ]</button>
+    </form>
+    <div class="result" id="resultY"></div>
+    <br><br>
+    <h2><b>Omega</b></h2>
+    <form id="polynomial-formOmega">
+        <label for="polynomial7">d:</label>
+        <input type="text" id="polynomial7" name="polynomial7" required> 
+        <label for="polynomial8">n:</label>
+        <input type="text" id="polynomial8" name="polynomial8" required>
+        <br><br>
+        <button type="submit">Calculate Ω<sup>n</sup><sub>d</sub> </button>
+    </form>
+    <div class="result" id="resultOmega"></div>
+    <br><br>
+    <h2><b>Quot</b></h2>
+    <form id="polynomial-formQuot">
+        <label for="polynomial9">d:</label>
+        <input type="text" id="polynomial9" name="polynomial9" required> 
+        <label for="polynomial10">n:</label>
+        <input type="text" id="polynomial10" name="polynomial10" required>
+        <label for="polynomial11">r:</label>
+        <input type="text" id="polynomial11" name="polynomial11" required>
+        <br><br>
+        <button type="submit">Calculate [(Quot<sup>d</sup><sub>r </sub> <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0 </sub>]</button>
+    </form>
+    <div class="result" id="resultQuot"></div>
+
     <script>
-        var output = document.getElementById('output'); 
-        function creaCaselleInput() {
-            let n = parseInt(prompt("Enter the number of Ωi you know"));
-          
-            let body = document.getElementsByTagName("body")[0];
-          
-            function createInputFields() {
-                output.innerHTML = ''; // Pulisce l'output precedente
-              let containers = document.querySelectorAll(".inputContainer");
-              containers.forEach(container => container.remove()); // Rimuove i container precedenti
-               
-              for (let i = 1; i <= n; i++) {
-                let container = document.createElement("div");
-                container.setAttribute("class", "inputContainer");
-                container.setAttribute("style", "margin-bottom: 5px;");
-          
-                let input = document.createElement("input");
-                input.setAttribute("type", "text");
-                input.setAttribute("id", "input_" + i);
-                input.setAttribute("value", i);
-                input.setAttribute("style", "margin-left: 5px;margin-right: 5px; "); 
-                const screenWidth = window.innerWidth;
-                const seventyFivePercentScreenWidth = screenWidth * 0.75;
-                
-                input.style.width = `${seventyFivePercentScreenWidth}px`; 
-          
-                let omegaText = document.createElement("span");
-                omegaText.innerHTML = "&Omega;<sub>" + i + "</sub>  ";
-                omegaText.setAttribute("style", "margin-left: 5px;");
-          
-                let output = document.createElement("span");
-                output.setAttribute("id", "output_" + i);
-                output.setAttribute("style", "margin-left: 10px;");
-          
-                let button = document.createElement("button");
-                button.textContent = "Factor " + i;
-                button.setAttribute("type", "button");
-          
-                button.addEventListener("click", function() {
-                  mostraValori(i);
-                });
-                let euler = document.createElement("button");
-                euler.innerHTML = "&chi;";
-                euler.setAttribute("style", "margin-left: 5px;");
-                euler.setAttribute("type", "button");
-          
-                euler.addEventListener("click", function() {  
-                    output.innerHTML = '';
-                    output.innerHTML = serieCaratt(input.value);
-                });
-          
-                container.appendChild(omegaText);
-                container.appendChild(input);
-                container.appendChild(button);
-                container.appendChild(euler);
-                container.appendChild(output);
-                body.appendChild(container);
-              }
-          
-              let buttonsContainer = document.createElement("div");
-              buttonsContainer.setAttribute("class", "buttonsContainer");
-          
-              let mostraValoriButton = document.createElement("button");
-              mostraValoriButton.textContent = "Motives";
-              mostraValoriButton.setAttribute("type", "button");
-              mostraValoriButton.setAttribute("style", "margin-right: 5px;");
-          
-              mostraValoriButton.addEventListener("click", function() {
-                var fatto = finale(parseInt(document.getElementsByTagName("input").length-3)); // Valore predefinito '1'
-                output.innerHTML += "<p> <b> Motives:</b> "   +  fatto  +"</p>"; 
-                output.innerHTML += "<p><b> Euler characteristics:</b> "   +  serieCaratt(fatto.toString())  +"</p>"; 
-              });
-          
-              buttonsContainer.appendChild(mostraValoriButton);
-          
-              let setP2 = document.createElement("button");
-              setP2.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>2</sup>)<sup>[n]</sup><sub>0</sub>';
+        document.getElementById('polynomial-form').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-              setP2.setAttribute("type", "button");
-              setP2.setAttribute("style", "margin-right: 5px;");
-          
-              setP2.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                
-                n = parseInt(prompt("How many terms do you need?"));
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                for (var i = 2 ; i<=n ;i++){
-                document.getElementById("input_"+i).setAttribute("value", "L^"+ math.simplify(i-1));
-                }
-              });
-          
-              buttonsContainer.appendChild(setP2);
-                    
-              let setToZeroButton = document.createElement("button");
-              setToZeroButton.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>3</sup>)<sup>[n]</sup><sub>0</sub>';
-  
-              setToZeroButton.setAttribute("type", "button");
-              setToZeroButton.setAttribute("style", "margin-right: 5px;");
-          
-              setToZeroButton.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                n = 7;
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                document.getElementById("input_2").setAttribute("value", "L+L^2");
-                document.getElementById("input_3").setAttribute("value", "L^2+L^3+L^4");
-                document.getElementById("input_4").setAttribute("value", "L^6 + 2*L^5 + L^4 + L^3 - L^2");
-                document.getElementById("input_5").setAttribute("value", "L^8 + 2*L^7 + 2*L^6 + L^5 - L^3");  
-                document.getElementById("input_6").setAttribute("value", "L^10 + 3*L^9 + 4*L^8 + 3*L^7 - L^6 - 2*L^5 - 2*L^4"); 
-                document.getElementById("input_7").setAttribute("value", "L^12 + 3*L^11 + 5*L^10 + 5*L^9 - 4*L^7 - 3*L^6 - L^5 + L^4"); 
-                
-              });
-              buttonsContainer.appendChild(setToZeroButton);
+            var k = parseInt(document.getElementById('polynomial1').value);
+            var n = parseInt(document.getElementById('polynomial2').value);
 
-              
-                    
-              let setP4 = document.createElement("button");
-              setP4.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>4</sup>)<sup>[n]</sup><sub>0</sub>';
-  
-              setP4.setAttribute("type", "button");
-              setP4.setAttribute("style", "margin-right: 5px;");
-          
-              setP4.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                n = 7;
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3");
-                document.getElementById("input_3").setAttribute("value", "L^2+L^3+2*L^4+L^5+L^6");
-                document.getElementById("input_4").setAttribute("value", "L^9 + 2*L^8 + 3*L^7 + 3*L^6+2*L^5 - L^2"); 
-                document.getElementById("input_5").setAttribute("value", "L^12 + 2*L^11 + 4*L^10 + 5*L^9 +5 L^8 +2*L^7 - 2*L^5 - L^4-L^3");  
-                document.getElementById("input_6").setAttribute("value", "L^15+3*L^14+7*L^13+10*L^12+11*L^11+7*L^10+L^9-6*L^8-6*L^7-6*L^6-L^5-L^4"); 
-                document.getElementById("input_7").setAttribute("value", "L^18+3*L^17+9*L^16+16*L^15+21*L^14+18*L^13+8*L^12-8*L^11-16*L^10-18*L^9-9*L^8-3*L^7+2*L^6+L^5+L^4"); 
-                
-              });
-              buttonsContainer.appendChild(setP4);
- 
-                    
-              let setP5 = document.createElement("button");
-              setP5.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>5</sup>)<sup>[n]</sup><sub>0</sub>';
-  
-              setP5.setAttribute("type", "button");
-              setP5.setAttribute("style", "margin-right: 5px;");
-          
-              setP5.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                n = 7;
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4");
-                document.getElementById("input_3").setAttribute("value", "L^8+L^7+2*L^6+2*L^5+2*L^4+L^3+L^2");
-                document.getElementById("input_4").setAttribute("value", "L^12+2*L^11+3*L^10+5*L^9+4*L^8+4*L^7+2*L^6+L^5-L^4-L^2");
-                document.getElementById("input_5").setAttribute("value", "L^16+2L^15+4L^14+7L^13+9L^12+9L^11+8L^10+4L^9+L^8-2L^7-3L^6-3L^5-L^4-L^3");
-                document.getElementById("input_6").setAttribute("value", "L^20+3*L^19+7*L^18+13*L^17+18*L^16+22*L^15+21*L^14+15*L^13+4*L^12-4*L^11-12*L^10-13*L^9-12*L^8-7*L^7-4*L^6-L^4");
-                document.getElementById("input_7").setAttribute("value", "L^24+3*L^23+9*L^22+20*L^21+33*L^20+46*L^19+53*L^18+45*L^17+27*L^16-25*L^14-42*L^13-43*L^12-37*L^11-21*L^10-9*L^9+3*L^7+4*L^6+L^5+L^4");
-                
-              });
-              buttonsContainer.appendChild(setP5);
- 
-                    
-              let setP6 = document.createElement("button");
-              setP6.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>6</sup>)<sup>[n]</sup><sub>0</sub>';
-              
-  
-              setP6.setAttribute("type", "button");
-              setP6.setAttribute("style", "margin-right: 5px;");
-          
-              setP6.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                n = 7;
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4+L^5");
-                document.getElementById("input_3").setAttribute("value", "L^10+L^9+2*L^8+2*L^7+3*L^6+2*L^5+2*L^4+L^3+L^2");
-                document.getElementById("input_4").setAttribute("value", "L^15+2*L^14+3*L^13+5*L^12+6*L^11+6*L^10+6*L^9+4*L^8+3*L^7+L^6-L^4-L^2");
-                document.getElementById("input_5").setAttribute("value", "L^20+2*L^19+4*L^18+7*L^17+11*L^16+13*L^15+15*L^14+14*L^13+12*L^12+7*L^11+3*L^10-2*L^9-3*L^8-5*L^7-4*L^6-3*L^5-L^4-L^3");
-                document.getElementById("input_6").setAttribute("value", "L^25+3*L^24+7*L^23+13*L^22+21*L^21+29*L^20+36*L^19+38*L^18+36*L^17+26*L^16+15*L^15-L^14-11*L^13-22*L^12-22*L^11-22*L^10-15*L^9-12*L^8-5*L^7-3*L^6-L^4");
-                document.getElementById("input_7").setAttribute("value", "L^30+3*L^29+9*L^28+20*L^27+37*L^26+58*L^25+82*L^24+97*L^23+104*L^22+92*L^21+67*L^20+25*L^19-15*L^18-57*L^17-80*L^16-91*L^15-82*L^14-67*L^13-42*L^12-23*L^11-6*L^10+L^9+6*L^8+5*L^7+4*L^6+L^5+L^4");
+            document.getElementById('result').innerText = '[Gr('+  k + ',' + n + ')]= ' +sostituisciLConAsterisco( grassmanniana(k, n));
+        });
 
-                
-              });
-              buttonsContainer.appendChild(setP6);
+        document.getElementById('polynomial-formHilb').addEventListener('submit', function(event) {
+            event.preventDefault();
 
+            var d = parseInt(document.getElementById('polynomial3').value);
+            var n = parseInt(document.getElementById('polynomial4').value);
 
- 
-                    
-              let setP7 = document.createElement("button");
-              setP7.innerHTML = '(<span style="font-family: Arial, sans-serif;">&#8473;</span><sup>7</sup>)<sup>[n]</sup><sub>0</sub>';
-              
-  
-              setP7.setAttribute("type", "button");
-              setP7.setAttribute("style", "margin-right: 5px;");
-          
-              setP7.addEventListener("click", function() { 
-                buttonsContainer.remove();
-                n = 7;
-                createInputFields();
-                document.getElementById("input_1").setAttribute("value", "1");
-                document.getElementById("input_2").setAttribute("value", "L+L^2+L^3+L^4+L^5+L^6"); 
-                document.getElementById("input_3").setAttribute("value", "L^12+L^11+2*L^10+2*L^9+3*L^8+3*L^7+3*L^6+2*L^5+2*L^4+L^3+L^2");
-                document.getElementById("input_4").setAttribute("value", "L^18+2*L^17+3*L^16+5*L^15+6*L^14+8*L^13+8*L^12+8*L^11+6*L^10+6*L^9+3*L^8+2*L^7-L^4-L^2"); 
-                document.getElementById("input_5").setAttribute("value", "L^24+2*L^23+4*L^22+7*L^21+11*L^20+15*L^19+19*L^18+21*L^17+22*L^16+20*L^15+17*L^14+11*L^13+6*L^12-3*L^10-6*L^9-6*L^8-6*L^7-4*L^6-3*L^5-L^4-L^3"); 
-                document.getElementById("input_6").setAttribute("value", "L^30+3*L^29+7*L^28+13*L^27+21*L^26+32*L^25+43*L^24+53*L^23+59*L^22+61*L^21+56*L^20+46*L^19+28*L^18+11*L^17-8*L^16-21*L^15-33*L^14-35*L^13-36*L^12-28*L^11-23*L^10-15*L^9-10*L^8-4*L^7-3*L^6-L^4"); 
-                document.getElementById("input_7").setAttribute("value", "L^36+3*L^35+9*L^34+20*L^33+37*L^32+62*L^31+94*L^30+126*L^29+157*L^28+176*L^27+183*L^26+167*L^25+133*L^24+78*L^23+19*L^22-46*L^21-99*L^20-141*L^19-157*L^18-158*L^17-138*L^16-113*L^15-78*L^14-49*L^13-22*L^12-7*L^11+4*L^10+7*L^9+8*L^8+5*L^7+4*L^6+L^5+L^4"); 
-                
-                
-              });
-              buttonsContainer.appendChild(setP7);
+            document.getElementById('resultHilb').innerHTML = '[Hilb<sup>' + d + '</sup>(𝔸<sup>' + n + '</sup>)<sub>0</sub>]= ' + sostituisciLConAsterisco( hilbertScheme(d, n));
+        });
 
+        document.getElementById('polynomial-formY').addEventListener('submit', function(event) {
+            event.preventDefault();
 
+            var d = parseInt(document.getElementById('polynomial5').value);
+            var k = parseInt(document.getElementById('polynomial6').value); 
+            document.getElementById('resultY').innerHTML = '[Y<sup>' +k + '</sup><sub>' + k+' , '+d + '</sub>]= ' + sostituisciLConAsterisco( Ykkd(d, k));
+        });
 
-                      
-            body.appendChild(buttonsContainer);
-            let texto = document.createElement("span");
-            texto.innerHTML = "<b>Insert the motive of the variety: </b> ";
-            texto.setAttribute("style", "margin-left: 5px;");
+        document.getElementById('polynomial-formOmega').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-            let varietyContainer = document.createElement("div");
-            varietyContainer.setAttribute("class", "inputContainer");
-            let inputa = document.createElement("input");
-            inputa.setAttribute("type", "text");
-            inputa.setAttribute("id", "variety");
-            inputa.setAttribute("value", 1);
-            inputa.setAttribute("style", "margin-top: 5px;margin-right: 5px; ");
-            let moltiplica = document.createElement("button");
-            moltiplica.setAttribute("type", "button");
-            moltiplica.setAttribute("id", "buttvariety");
-            moltiplica.textContent = "Global motive";
-            moltiplica.setAttribute("style", "margin-top: 5px;margin-right: 5px; "); 
-            moltiplica.addEventListener("click", function() {   
-                for (var i = 1 ; i<=n ;i++){ 
-                    var fatto = "("+ document.getElementById("input_"+i).value +")*("+ inputa.value +")"
-                document.getElementById("input_"+i).setAttribute("value", fatto);
-                }
-              });
-              let Pn = document.createElement("button");
-              Pn.innerHTML = ' <span style="font-family: Arial, sans-serif;">&#8473;</span><sup>n</sup>';
-              Pn.setAttribute("id", "Pn");
-              Pn.setAttribute("type", "button");
-              Pn.setAttribute("style", "margin-right: 5px;");
-              let inputPn = document.createElement("input");
-              inputPn.setAttribute("type", "text");
-              inputPn.setAttribute("id", "inputPn");
-              inputPn.setAttribute("placeholder", "n");
-              inputPn.setAttribute("style", "margin-top: 5px;margin-right: 5px;width: 30px; ");
-          
-              Pn.addEventListener("click", function() {   
-                s=math.parse(inputPn.value);
-                if(inputPn.value){
-                    var proiettivo = '1';
-                    for (var i = 1 ; i<=s ; i++ )
-                    proiettivo += "+L^" + i ;
-                }
-                inputa.setAttribute("value", proiettivo);
-              }); 
+            var d = parseInt(document.getElementById('polynomial7').value);
+            var k = parseInt(document.getElementById('polynomial8').value); 
+            document.getElementById('resultOmega').innerHTML = 'Ω<sup>' +k + '</sup><sub>' + d + '</sub>= ' + sostituisciLConAsterisco( Omega(d, k));
+        });
 
-            varietyContainer.appendChild(texto);
-            varietyContainer.appendChild(inputa);
-            varietyContainer.appendChild(moltiplica);
-            varietyContainer.appendChild(Pn);
-            varietyContainer.appendChild(inputPn);
-            body.appendChild(varietyContainer);
+        document.getElementById('polynomial-formQuot').addEventListener('submit', function(event) {
+            event.preventDefault();
 
+            var d = parseInt(document.getElementById('polynomial9').value);
+            var n = parseInt(document.getElementById('polynomial10').value); 
+            var r = parseInt(document.getElementById('polynomial11').value); 
+            document.getElementById('resultQuot').innerHTML = '[(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub>]= ' + sostituisciLConAsterisco( Quot(n,r,d).toString());
+        });
 
-              
-            let newomegaContainer = document.createElement("div");
-            newomegaContainer.setAttribute("class", "inputContainer");
-
-            let testo = document.createElement("span");
-            testo.innerHTML = "<b>Insert the "+ math.simplify(n+1) +"-th motive: </b> ";
-            testo.setAttribute("style", "margin-left: 5px;");
-
-            let newMotive = document.createElement("input");
-            newMotive.setAttribute("type", "text");
-            newMotive.setAttribute("id", "newMotive");
-            newMotive.setAttribute("value", 1);
-            newMotive.setAttribute("style", "margin-top: 5px;margin-right: 5px; ");
-
-            let outputnewMotive = document.createElement("span");
-            outputnewMotive.setAttribute("id", "outputnewMotive");
-            outputnewMotive.setAttribute("style", "margin-left: 10px;");
-          
-
-            let calcolanewMotive = document.createElement("button");
-            calcolanewMotive.setAttribute("type", "button");
-            calcolanewMotive.setAttribute("id", "calcolanewMotive");
-            calcolanewMotive.textContent = "Compute Ω"+math.simplify(n+1);
-            calcolanewMotive.setAttribute("style", "margin-top: 5px;margin-right: 5px; "); 
-            calcolanewMotive.addEventListener("click", function() { 
-                var b = parseInt(document.getElementsByTagName("input").length-2);
-                var rifatto = Algebrite.expand( '(' +finale(b).toString()+ ')*(1+a*t^'+ b +')'); // Valore predefinito '1'
-                outputnewMotive.innerHTML += "<p>"   +  rifatto  +"</p>";
-                
-                
-              });
-
-              newomegaContainer.appendChild(testo);
-              newomegaContainer.appendChild(newMotive);
-              newomegaContainer.appendChild(calcolanewMotive);
-              newomegaContainer.appendChild(outputnewMotive);
-            body.appendChild(newomegaContainer);
-
-          }
-
-            createInputFields(); // Chiamata iniziale per creare i campi di input
-          }
-         
-        function mostraValori(h) {
-            let inputId = "input_" + h;
-            let outputId = "output_" + h; // Modifica per far riferimento all'ID unico dell'output
-            let outputElement = document.getElementById(outputId); // Modifica per selezionare l'elemento di output corretto
         
-            if (outputElement) {
-                let inputElement = document.getElementById(inputId);
-                if (inputElement) {
-                    let valoreInput = Algebrite.expand(inputElement.value).toString(); 
-                    
-                    outputElement.innerText =  sviluppoProdotto( math.parse(valoreInput),h+1,parseInt(document.getElementsByTagName("input").length-2)) ; // Mostra il valore dell'input nell'output
-                } else { 
-                    outputElement.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
-                }
-            } else {
-                console.log("Elemento con ID " + outputId + " non trovato");
-            }}
-         
-            
-        	function sviluppoMonomio(p,n){
-                var output = document.getElementById("output");
-                        var t = math.parse('t');
-                        var sviluppo = math.parse('0');
-                            for (var i = 0; i < n; i++) {
-                        var termine = math.simplify(math.parse('(((' + p.toString() + ')*t)^'+i+')')); 
-                        sviluppo = sviluppo +'+'+ '(' + termine.toString() + ')';
-                        svuluppo = Algebrite.expand( sviluppo.toString() ).toString() ;
-                            } 
-                        var espansione = Algebrite.expand( sviluppo.toString() );  
-                        return espansione;
-                    }
-                
-            function sviluppoProdotto(p,a,n){
-                var l =math.simplify(math.parse(a + "-" + "1"));   
-                    
-                if (p !== null) {
-                    var completo = 1;                    
-                    for (var i = 0; i < parseInt(degreePolynomial(p ))+1 ; i++) {
-                        console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
-                        var GIUSU = estraiTermine(p,i, 'L').split("*"); 
-                        var GIU = math.simplify(GIUSU[1]);
-                        var SU = math.simplify(GIUSU[0]); 
-                        console.log(GIUSU.toString(),SU.toString());
-                        var temp = Algebrite.expand('(' + (Algebrite.expand( sviluppoMonomio(GIU,parseInt(((n+1)/(a-1))+1) ))).toString() + ')^'+ SU).toString() ; 
-                        completo =      Algebrite.expand( truncate(  '(' + completo.toString() + ')*(' + temp + ')'  ,n ) );  
-                }
-                var  funzione = truncate(completo.toString(),n); 
-                var result =   truncate(Algebrite.expand(funzione.toString().replace(/t/g, "(t^" +l+" )").replace(/\+\s+-/g, "-")),n-1) ;  
-                return  result ;
-                                 
-                }
-            } 
-            //.replace(/\+\s+-/g, "-") 
-            function estraiTermines(p, n , variable) {
-                var L=math.parse(variable);
-                var node = p;
-                var grado = parseInt(n);
-                var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
-                
-                var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString()));
-                var stringa = fattore .toString().replace(")",'').replace("(",'');
-                  if (stringa.startsWith('L')) {  
-                    return "(1)*" + stringa; 
-                } else if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) { 
-                    if (stringa.indexOf('*') === -1){ 
-                        return "1*(" +stringa + ")";
-                    }
-                    else{ 
-                        return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
-                    }
-              }else if (stringa.indexOf('L') === -1) { 
-                console.log("d","(" + stringa + ")" + "* (1)");
-                    return "(" + stringa + ")" + "* (1)";
-              } else { 
-                console.log("e");
-                    return stringa;
-        }}
-                
-            function estraiTermine(p, n , variable) {
-                var L=math.parse(variable);
-                var node = p;
-                var grado = parseInt(n);
-                var der = nthDerivative(node, grado , variable).evaluate({ [variable] : 0 }) / fattoriale(grado);
-                der = Math.round(parseFloat(der)).toString();
-                var fattore = math.simplify(math.parse('((' + der + '))*' + variable + '^' + grado.toString())).toString(); 
-                var stringa = fattore .toString().replace(")",'').replace("(",'');
-                  if (stringa.indexOf('L') === -1) {
-                    if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) {  
-                        if (stringa.indexOf('*') === -1){ 
-                        return "1*(" +stringa + ")";
-                    }
-                    else{ 
-                        return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
-                    }
-                    }else{
-                        console.log("d","(" + stringa + ")" + "* (1)");
-                            return "(" + stringa + ")" + "* (1)";
-                    }
-                    } else {  
-                        if (stringa.startsWith('L')) {  
-                            return "(1)*" + stringa; 
-                        } else if (stringa.startsWith('-')&stringa.indexOf('L') !== -1) {
-                            if (stringa.indexOf('*') === -1){ 
-                            return "1*(" +stringa + ")";
-                        }
-                        else{ 
-                            return stringa.split("*")[0].replace(/-/,'') + "* (- "+ stringa.split("*")[1] +")";
-                        }
-                        }else{
-                            console.log("e");
-                                return stringa;
-                        }
-                    }
-                }
-                
-                
-                
-                
-                function nthDerivative(f, n , a) {
-                        var result =  f;
-                        for (var i = 0; i < n; i++) {
-                            result = math.derivative(result, a);
-                        }
-                        return result;
-                        }
-                
-                
-                function fattoriale(n) {
-                    if (n === 0 || n === 1) {
-                        return 1;
-                    } 
-                    else {
-                        return math.multiply(n, fattoriale(n - 1));
-                        }
-                    }
-
-                    function degreePolynomial(p) {
-                        var stringa=p.toString();
-                        stringa = stringa.replace(/\s/g, ''); // Rimuove tutti gli spazi dalla stringa
-                    
-                        let regex = /\^(\d+)/g;
-                        let matches = stringa.match(regex);
-                        let matches2 = stringa.match('L'); // Trova tutte le corrispondenze nella stringa senza spazi
-                    
-                        let massimoA = 0;
-                    
-                        if (matches) {
-                            matches.forEach(match => {
-                                let numeroA = parseInt(match.substring(1)); // Estrai il valore di 'a' dalla corrispondenza
-                                massimoA = Math.max(massimoA, numeroA); // Aggiorna il massimo valore di 'a' trovato finora
-                            });
-                        }
-                        else if(matches2){massimoA=1}
-                    
-                        return massimoA;
-                    }
-                    
-                    
-
-                    
-                function truncate(p, n) {
-                    var stringa = Algebrite.expand(p.toString()).toString();
-                    const regex = /t\^(\d+)/g;
-                    let match;
-                    let minExponent = Number.MAX_SAFE_INTEGER;
-                    let minExponentIndex = -1;
-                
-                    while ((match = regex.exec(stringa)) !== null) {
-                        const exponent = parseInt(match[1]);
-                        if (exponent > n && exponent < minExponent) {
-                            minExponent = exponent;
-                            minExponentIndex = match.index;
-                        }
-                    }
-                
-                    if (minExponentIndex !== -1) {
-                        const indexT = stringa.lastIndexOf('t', minExponentIndex); // Ultimo 't' prima dell'occorrenza trovata
-                        const firstPart = stringa.substring(0, indexT); // Parte della stringa prima dell'occorrenza
-                        const secondPart = stringa.substring(indexT); // Parte della stringa dall'occorrenza in poi
-                
-                     const indicePiu =  secondPart.indexOf('+') ; 
-                  if (indicePiu !== -1) {
-                    
-                    return Algebrite.expand(secondPart.substring( indicePiu+1));
-                  } 
-                else {
-                    return "Il carattere '+' non è presente nella stringa.";
-                  }
-                    }
-                    
-                    // Se non c'è nessuna corrispondenza o 't^a' con esponente minore di n, restituisci la stringa originale
-                    return p;
-                
-                
-                }
-                
- 
-    
-    function finale(n){
-        output.innerHTML = ''; // Pulisce l'output precedente
-        var stringa = "1";
-        for(var h = n ; h>=1 ; h-- ){ 
-           let inputId = "input_" + h.toString();
-            let outputId = "output_" + h.toString(); // Modifica per far riferimento all'ID unico dell'output
-            let outputElement = document.getElementById(outputId); // Modifica per selezionare l'elemento di output corretto
-        
-            if (outputElement) {
-                let inputElement = document.getElementById(inputId);
-                if (inputElement) {
-                    let valoreInput = Algebrite.expand(inputElement.value).toString(); 
-                    stringa += "*(" + sviluppoProdotto(math.parse(valoreInput),h+1,n+1)+")"; 
-                    stringa =  "(" + truncate( Algebrite.expand(stringa) ,n).toString()+")";
-                } else {
-                    console.log("Elemento con ID " + inputId + " non trovato");
-                    output.innerText += "2errore2"; // Se l'elemento di input non è trovato, aggiungi "2ciao2" all'output
-                }
-            } else {
-                console.log("Elemento con ID " + outputId + " non trovato");
+        function fattoriale(p){
+            var p1 = new Polynomial('1'); 
+            for(var h = 1 ; h<=p ; h++ ){
+                p1=p1.mul('L^'+h+'-1') 
             }
+            return p1.toString()
+        }
+        function grassmanniana(k,n){
+            if(k>n) return "0";
+            if(n<0) return "0";
+            if(k<0) return "0";
+            var p1 = Polynomial(fattoriale(n))
+            var p2 = Polynomial(fattoriale(k))
+            var p3 = Polynomial(fattoriale(n-k))
+            p1=p1.div(p2)
+            p1=p1.div(p3)
+            return p1.toString()
         } 
-        var result = truncate( Algebrite.expand(stringa) ,n); 
-        return result;
-    }
-    function serieCaratt(p){
-        var result = p.replace(/L/g, "(1)");
-        return result =  Algebrite.expand(result).toString();
-    } 
-    function nuovoOmega(){
-        
-    }
-        window.onload = creaCaselleInput;
-        
+
+        function hilbertScheme(d, n) {
+            if(d==1) return "1";
+            if(n<1) return "0";
+            lista = [
+            ["1"],//d=2
+            ["1","L^2+L+1"],//d=3
+            ["1","L^3+2L^2+L+1","L^6+2L^5+3L^4+3L^3+2L^2+L+1"],//d=4
+            ["1","L^4+2L^3+2L^2+L+1","L^8+2L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^12+2L^11+4L^10+7L^9+9L^8+9L^7+9L^6+6L^5+5L^4+3L^3+2L^2+L+1"],//d=5
+            ["1","L^5+3L^4+3L^3+2L^2+L+1","L^10+3L^9+7L^8+9L^7+9L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^15+3L^14+7L^13+13L^12+17L^11+20L^10+20L^9+17L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^20+3L^19+7L^18+13L^17+21L^16+28L^15+34L^14+37L^13+37L^12+33L^11+29L^10+23L^9+18L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=6
+            ["1","L^6+3L^5+4L^4+3L^3+2L^2+L+1","L^12+3L^11+8L^10+14L^9+16L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^18+3L^17+9L^16+19L^15+30L^14+38L^13+44L^12+39L^11+34L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^24+3L^23+9L^22+20L^21+36L^20+54L^19+73L^18+85L^17+91L^16+88L^15+81L^14+68L^13+57L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^30+3L^29+9L^28+20L^27+37L^26+60L^25+90L^24+116L^23+143L^22+160L^21+172L^20+168L^19+162L^18+144L^17+128L^16+107L^15+89L^14+71L^13+58L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=7
+            ["1","L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^14+4L^13+12L^12+22L^11+28L^10+27L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^21+5L^20+15L^19+34L^18+55L^17+76L^16+88L^15+87L^14+77L^13+64L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^28+6L^27+18L^26+40L^25+74L^24+114L^23+158L^22+193L^21+214L^20+217L^19+207L^18+183L^17+157L^16+129L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^35+6L^34+19L^33+43L^32+82L^31+137L^30+206L^29+280L^28+351L^27+409L^26+448L^25+462L^24+452L^23+425L^22+385L^21+339L^20+289L^19+244L^18+200L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+231L^36+332L^35+449L^34+566L^33+678L^32+770L^31+840L^30+870L^29+875L^28+848L^27+801L^26+733L^25+660L^24+578L^23+503L^22+428L^21+361L^20+299L^19+248L^18+201L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"]//d=8
+            ];
+            motive=Polynomial("0");
+            for(var g = 1 ; g<=d-1 ; g++ ){ 
+                coe = 0;
+                for(var j = 0 ; j<= d-g-1 ; j++){   
+                    tempo = (Polynomial(grassmanniana(d-1,d-j-g+n-1)));
+                    tempo= tempo.mul(grassmanniana(j,d));
+                    tempo=tempo.mul(Polynomial("L^"+(calcolaCoefficiente(j,2))));
+                if(j%2==1) {  
+                    tempo= tempo.mul(Polynomial("-1"));   
+                }
+                coe=Polynomial(coe).add(tempo); 
+                
+            } 
+            coe=coe.mul(Polynomial(lista[d-2][g-1]));   
+                motive=motive.add(coe);  
+            }  
+            return motive.toString();
+        }
+        function calcolaCoefficiente(n, k) {
+            // Usando l'approccio del fattoriale
+            if(k>n) return 0;
+            if(n<0) return 0;
+            if(k<0) return 0;
+            return fattorial(n) / (fattorial(k) * fattorial(n - k));
+        }
+
+        function fattorial(numero) {
+            var risultato = 1;
+            for (var i = 2; i <= numero; i++) {
+                risultato *= i;
+            }
+            return risultato;
+        }
+        function sostituisciLConAsterisco(input) {
+            // Usa una regex per trovare tutte le occorrenze di un numero seguito da "L"
+            return input.replace(/(\d)L/g, '$1*L');
+        }
+        function Ykkd(d,k) {
+            if (k>=d) return "0";
+            if (k==0 & d==1) return "1";
+            if (d==1) return "0";
+            if (k<0) return "0";
+            if((d-k)==1) return "1";
+            if((d-k)==2) return grassmanniana(1,calcolaCoefficiente(k+1,2));
+            if((d-k)==3) {
+                sk = calcolaCoefficiente(k+1,2);
+                ssk=sk-1
+                tempo1 = Polynomial(grassmanniana(2,sk));
+                tempo2 = Polynomial(grassmanniana(1,k)).mul("L^"+ssk);
+                tempo1 = tempo1.add(tempo2.toString())
+                return tempo1.toString();
+            }
+            if((d-k)==4) {
+                sk = calcolaCoefficiente(k+1,2);
+                sk1=sk-1;
+                sk2=sk-2;
+                ssk = calcolaCoefficiente(k+2,2) -3;
+                tempo1 = Polynomial(grassmanniana(3,sk));
+                tempo2 = Polynomial(grassmanniana(1,k)).mul("L^"+ssk);
+                tempo3 = Polynomial(grassmanniana(1,k)).mul(grassmanniana(1,sk1)).mul("L^"+sk2);
+                tempo4 = Polynomial(grassmanniana(2,k)).mul("L^3+L^2").mul("L^"+sk2);
+                tempo1 = tempo1.add(tempo2.toString()).add(tempo3.toString()).add(tempo4.toString())
+                return tempo1.toString();
+            }
+            if((d-k)==5) { 
+                a= (k-1)*(k+6)/2;
+                b=calcolaCoefficiente(k+1,2);
+                c=((k-1)*(k+4)/2) -1;
+                d=((k-1)*(k+4)/2) ;
+                e=2*(b-2) ;
+                f= (b-2) ;
+                g= (b-1) ;
+                h= (b-3) ;
+                mot= Polynomial(grassmanniana(1,k)).mul("L^"+a);
+                coe=Polynomial(grassmanniana(1,k)).mul(grassmanniana(1,b-1));
+                tempo=Polynomial(grassmanniana(2,k)).mul(grassmanniana(1,2)).mul(grassmanniana(1,2));
+                tempo= tempo.mul(Polynomial("-1"));   
+                coe=coe.add(tempo);
+                coe=coe.mul("L^"+c);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(2,k)).mul(grassmanniana(1,2)).mul(grassmanniana(1,2));
+                coe=coe.mul("L^"+d);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(2,k)).mul(grassmanniana(2,3));
+                coe=coe.mul("L^"+e);
+                mot=mot.add(coe.toString());
+                coe=Polynomial(grassmanniana(3,k)).mul("L^9+L^8+L^7+L^6-L^4-L^3-L^2")
+                tempo=Polynomial(grassmanniana(2,k)).mul("L^3+L^2").mul(grassmanniana(1,f));
+                coe=coe.add(tempo);
+                tempo=Polynomial(grassmanniana(1,k)).mul(grassmanniana(2,g))
+                coe=coe.add(tempo);
+                coe=coe.mul("L^"+h);
+
+                mot=mot.add(coe.toString());
+                mot=mot.add(grassmanniana(4,calcolaCoefficiente(k+1,2)));
+                return mot.toString();
+            }
+            somma = Polynomial("0");
+            lista = [
+            ["1"],//d=2
+            ["1","L^2+L+1"],//d=3
+            ["1","L^3+2L^2+L+1","L^6+2L^5+3L^4+3L^3+2L^2+L+1"],//d=4
+            ["1","L^4+2L^3+2L^2+L+1","L^8+2L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^12+2L^11+4L^10+7L^9+9L^8+9L^7+9L^6+6L^5+5L^4+3L^3+2L^2+L+1"],//d=5
+            ["1","L^5+3L^4+3L^3+2L^2+L+1","L^10+3L^9+7L^8+9L^7+9L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^15+3L^14+7L^13+13L^12+17L^11+20L^10+20L^9+17L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^20+3L^19+7L^18+13L^17+21L^16+28L^15+34L^14+37L^13+37L^12+33L^11+29L^10+23L^9+18L^8+13L^7+10L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=6
+            ["1","L^6+3L^5+4L^4+3L^3+2L^2+L+1","L^12+3L^11+8L^10+14L^9+16L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^18+3L^17+9L^16+19L^15+30L^14+38L^13+44L^12+39L^11+34L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^24+3L^23+9L^22+20L^21+36L^20+54L^19+73L^18+85L^17+91L^16+88L^15+81L^14+68L^13+57L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","L^30+3L^29+9L^28+20L^27+37L^26+60L^25+90L^24+116L^23+143L^22+160L^21+172L^20+168L^19+162L^18+144L^17+128L^16+107L^15+89L^14+71L^13+58L^12+44L^11+35L^10+26L^9+20L^8+14L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"],//d=7
+            ["1","L^7+4L^6+5L^5+5L^4+3L^3+2L^2+L+1","L^14+4L^13+12L^12+22L^11+28L^10+27L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^21+5L^20+15L^19+34L^18+55L^17+76L^16+88L^15+87L^14+77L^13+64L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^28+6L^27+18L^26+40L^25+74L^24+114L^23+158L^22+193L^21+214L^20+217L^19+207L^18+183L^17+157L^16+129L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^35+6L^34+19L^33+43L^32+82L^31+137L^30+206L^29+280L^28+351L^27+409L^26+448L^25+462L^24+452L^23+425L^22+385L^21+339L^20+289L^19+244L^18+200L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+231L^36+332L^35+449L^34+566L^33+678L^32+770L^31+840L^30+870L^29+875L^28+848L^27+801L^26+733L^25+660L^24+578L^23+503L^22+428L^21+361L^20+299L^19+248L^18+201L^17+164L^16+131L^15+105L^14+82L^13+65L^12+49L^11+38L^10+28L^9+21L^8+15L^7+11L^6+7L^5+5L^4+3L^3+2L^2+L+1"]//d=8
+            ];
+            for (var j=1; j<= k ;j++)
+            {
+            coe=Polynomial(grassmanniana(j,k));
+            esp= (k-j)*(d-j-1)-calcolaCoefficiente(k-j,2);  
+            coe=coe.mul("L^"+esp);
+            if((k+j)%2==1) {  
+                coe= coe.mul(Polynomial("-1"));   
+            } 
+            coe=coe.mul(lista[d-2][j-1]); 
+            somma =somma.add(coe);
+            }
+            return somma.toString();
+        } 
+
+        function Omega(d, n) {
+            if(n==1 & d >1) return "0";
+            if(n==1 ) return "1";
+            if(n==2) return "L^"+(d-1);
+            if(n<1) return "0";
+            if(d==2) return (Polynomial(grassmanniana(1,n-1)).mul("L").toString());
+            lista = [["0","L^2"], // d=3
+            ["0","L^3","L^6+2L^5+L^4+L^3-L^2"],// d=4
+            ["0","L^4","L^8+2L^7+2L^6+L^5-L^3","L^12+2L^11+4L^10+5L^9+5L^8+2L^7-2L^5-L^4-L^3"],// d=5
+            ["0","L^5","L^10+3L^9+4L^8+3L^7-L^6-2L^5-2L^4","L^15+3L^14+7L^13+10L^12+11L^11+7L^10+L^9-6L^8-6L^7-6L^6-L^5-L^4","L^20+3L^19+7L^18+13L^17+18L^16+22L^15+21L^14+15L^13+4L^12-4L^11-12L^10-13L^9-12L^8-7L^7-4L^6-L^4"],// d=6
+            ["0","L^6","L^12+3L^11+5L^10+5L^9-4L^7-3L^6-L^5+L^4","L^18+3L^17+9L^16+16L^15+21L^14+17L^13+8L^12-8L^11-16L^10-17L^9-9L^8-3L^7+2L^6+L^5+L^4","L^24+3L^23+9L^22+20L^21+33L^20+45L^19+52L^18+44L^17+26L^16-24L^14-41L^13-42L^12-36L^11-21L^10-9L^9+3L^7+4L^6+L^5+L^4","L^30+3L^29+9L^28+20L^27+37L^26+57L^25+81L^24+95L^23+102L^22+90L^21+66L^20+25L^19-14L^18-55L^17-78L^16-89L^15-81L^14-66L^13-42L^12-23L^11-6L^10+L^9+6L^8+5L^7+4L^6+L^5+L^4"],// d=7
+            ["0","L^7","L^14+4L^13+8L^12+10L^11+2L^10-7L^9-10L^8-3L^7+L^6+2L^5","2L^21+5L^20+15L^19+30L^18+43L^17+42L^16+24L^15-11L^14-37L^13-51L^12-35L^11-16L^10+4L^9+8L^8+8L^7+2L^6+L^5","2L^28+6L^27+18L^26+40L^25+70L^24+102L^23+124L^22+121L^21+85L^20+26L^19-49L^18-106L^17-138L^16-130L^15-99L^14-50L^13-13L^12+16L^11+23L^10+21L^9+13L^8+7L^7+L^6+L^5","2L^35+6L^34+19L^33+43L^32+82L^31+133L^30+194L^29+246L^28+279L^27+272L^26+226L^25+128L^24+12L^23-121L^22-224L^21-300L^20-312L^19-291L^18-220L^17-145L^16-62L^15-6L^14+36L^13+47L^12+48L^11+34L^10+24L^9+12L^8+6L^7+L^6+L^5","2L^42+6L^41+19L^40+44L^39+85L^38+145L^37+227L^36+320L^35+415L^34+494L^33+541L^32+540L^31+475L^30+352L^29+177L^28-22L^27-234L^26-413L^25-553L^24-615L^23-622L^22-558L^21-459L^20-323L^19-199L^18-79L^17+2L^16+62L^15+84L^14+89L^13+73L^12+57L^11+37L^10+23L^9+11L^8+6L^7+L^6+L^5"]// d=8
+            ];
+            motive=Polynomial("0");
+            for(var g = 1 ; g<=d-1 ; g++ ){ 
+                coe = 0;
+                for(var j = 0 ; j<= d-g-1 ; j++){   
+                    tempo = (Polynomial(grassmanniana(d-1,d-j-g+n-1)));
+                    tempo= tempo.mul(grassmanniana(j,d));
+                    tempo=tempo.mul(Polynomial("L^"+(calcolaCoefficiente(j,2))));
+                if(j%2==1) {  
+                    tempo= tempo.mul(Polynomial("-1"));   
+                }
+                coe=Polynomial(coe).add(tempo); 
+                
+            } 
+            coe=coe.mul(Polynomial(lista[d-3][g-1]));   
+                motive=motive.add(coe);  
+            }  
+            return motive.toString();
+        }
+        function Quot(n,r,d){
+            if (d==1) { return grassmanniana(1,r);}
+            if (d==2) {
+                a=r-1; 
+                mot= Polynomial(grassmanniana(1,n)).mul(grassmanniana(1,r)).mul("L^"+a);
+                mot=Polynomial(mot).add(grassmanniana(2,r));
+                return mot}
+            if (d==3) { 
+                a= 2*(r-1);
+                b= r-2;
+                H1=Polynomial(hilbertScheme(3,n)).mul(grassmanniana(1,r)).mul("L^"+a);  
+                H2=Polynomial(grassmanniana(2,r)).mul(grassmanniana(1,2*n)).mul("L^"+b);  
+                H3=Polynomial(grassmanniana(3,r));
+                return H1.add(H2.toString()).add(H3.toString()).toString();
+            } 
+        }
     </script>
 </body>
 </html>
