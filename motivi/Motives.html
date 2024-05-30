@@ -12,6 +12,11 @@
         }
         .result {
             margin-top: 10px;
+        }  
+          
+        /* Assicurati che il testo non sia forzato in maiuscolo */
+        .normal-case {
+            text-transform: none;
         }
     </style>
 </head>
@@ -24,8 +29,9 @@
         <label for="polynomial2">n:</label>
         <input type="text" id="polynomial2" name="polynomial2" required>
         <br><br>
-        <button type="submit">Calculate [Gr(k,n)]</button>
-    </form>
+        <button id="vai" type="submit">Calculate [Gr(k,n)]</button>
+    </form> 
+    <div class="result" id="resultChar"></div>
     <div class="result" id="result"></div>
     <br><br>
     <h2><b>Hilbert schemes</b></h2>
@@ -37,6 +43,7 @@
         <br><br>
         <button type="submit">Calculate [Hilb<sup>d</sup>( <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0</sub> ]</button>
     </form>
+    <div class="result" id="resultHilb2"></div>
     <div class="result" id="resultHilb"></div>
     <br><br>
     <h2><b>Exact embedding dimension</b></h2>
@@ -48,6 +55,7 @@
         <br><br>
         <button type="submit">Calculate [Y<sup>k</sup><sub>k,d</sub> ]</button>
     </form>
+    <div class="result" id="resultY2"></div>
     <div class="result" id="resultY"></div>
     <br><br>
     <h2><b>Omega</b></h2>
@@ -59,6 +67,7 @@
         <br><br>
         <button type="submit">Calculate Ω<sup>n</sup><sub>d</sub> </button>
     </form>
+    <div class="result" id="resultOmega2"></div>
     <div class="result" id="resultOmega"></div>
     <br><br>
     <h2><b>Quot</b></h2>
@@ -72,16 +81,17 @@
         <br><br>
         <button type="submit">Calculate [(Quot<sup>d</sup><sub>r </sub> <span style="font-family: Arial, sans-serif;">&#120120;</span> <sup>n</sup>)<sub>0 </sub>]</button>
     </form>
+    <div class="result" id="resultQuot2"></div>
     <div class="result" id="resultQuot"></div>
 
     <script>
         document.getElementById('polynomial-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
+            event.preventDefault();  
             var k = parseInt(document.getElementById('polynomial1').value);
             var n = parseInt(document.getElementById('polynomial2').value);
-
-            document.getElementById('result').innerText = '[Gr('+  k + ',' + n + ')]= ' +sostituisciLConAsterisco( grassmanniana(k, n));
+            var f=  grassmanniana(k, n);
+            document.getElementById('result').innerText = '[Gr('+  k + ',' + n + ')]= ' + sostituisciLConAsterisco(f);
+            document.getElementById('resultChar').innerHTML = '&chi;<sub>Gr('+  k + ',' + n + ')</sub>= ' + Polynomial(f).eval(1);
         });
 
         document.getElementById('polynomial-formHilb').addEventListener('submit', function(event) {
@@ -89,8 +99,9 @@
 
             var d = parseInt(document.getElementById('polynomial3').value);
             var n = parseInt(document.getElementById('polynomial4').value);
-
-            document.getElementById('resultHilb').innerHTML = '[Hilb<sup>' + d + '</sup>(𝔸<sup>' + n + '</sup>)<sub>0</sub>]= ' + sostituisciLConAsterisco( hilbertScheme(d, n));
+            f=hilbertScheme(d, n);
+            document.getElementById('resultHilb').innerHTML = '[Hilb<sup>' + d + '</sup>(𝔸<sup>' + n + '</sup>)<sub>0</sub>]= ' + sostituisciLConAsterisco( f);
+            document.getElementById('resultHilb2').innerHTML = '&chi;<sub>Hilb<sup>' + d + '</sup>(𝔸<sup>' + n + '</sup>)<sub>0</sub></sub>= ' + Polynomial(f).eval(1);
         });
 
         document.getElementById('polynomial-formY').addEventListener('submit', function(event) {
@@ -98,7 +109,10 @@
 
             var d = parseInt(document.getElementById('polynomial5').value);
             var k = parseInt(document.getElementById('polynomial6').value); 
-            document.getElementById('resultY').innerHTML = '[Y<sup>' +k + '</sup><sub>' + k+' , '+d + '</sub>]= ' + sostituisciLConAsterisco( Ykkd(d, k));
+            f=Ykkd(d, k);
+            document.getElementById('resultY').innerHTML = '[Y<sup>' +k + '</sup><sub>' + k+' , '+d + '</sub>]= ' + sostituisciLConAsterisco( f);
+            document.getElementById('resultY2').innerHTML = '&chi;<sub>Y<sup>' +k + '</sup><sub>' + k+' , '+d + '</sub></sub>= ' + Polynomial(f).eval(1);
+
         });
 
         document.getElementById('polynomial-formOmega').addEventListener('submit', function(event) {
@@ -106,7 +120,9 @@
 
             var d = parseInt(document.getElementById('polynomial7').value);
             var k = parseInt(document.getElementById('polynomial8').value); 
-            document.getElementById('resultOmega').innerHTML = 'Ω<sup>' +k + '</sup><sub>' + d + '</sub>= ' + sostituisciLConAsterisco( Omega(d, k));
+            f=Omega(d, k);
+            document.getElementById('resultOmega').innerHTML = 'Ω<sup>' +k + '</sup><sub>' + d + '</sub>= ' + sostituisciLConAsterisco( f);
+            document.getElementById('resultOmega2').innerHTML = '&chi;<sub>Ω<sup>' +k + '</sup><sub>' + d + '</sub></sub>= ' + Polynomial(f).eval(1);
         });
 
         document.getElementById('polynomial-formQuot').addEventListener('submit', function(event) {
@@ -115,9 +131,11 @@
             var d = parseInt(document.getElementById('polynomial9').value);
             var n = parseInt(document.getElementById('polynomial10').value); 
             var r = parseInt(document.getElementById('polynomial11').value); 
-            document.getElementById('resultQuot').innerHTML = '[(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub>]= ' + sostituisciLConAsterisco( Quot(n,r,d).toString());
+            f=Quot(n,r,d);
+            document.getElementById('resultQuot').innerHTML = '[(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub>]= ' + sostituisciLConAsterisco( f);
+            document.getElementById('resultQuot2').innerHTML = '&chi;<sub>(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub></sub>= ' + Polynomial(f).eval(1);
         });
-
+ 
         
         function fattoriale(p){
             var p1 = new Polynomial('1'); 
@@ -276,6 +294,7 @@
             if(n==1 ) return "1";
             if(n==2) return "L^"+(d-1);
             if(n<1) return "0";
+            if(d==2) return (Polynomial(grassmanniana(1,n-1)).mul("L").toString());
             lista = [["0","L^2"], // d=3
             ["0","L^3","L^6+2L^5+L^4+L^3-L^2"],// d=4
             ["0","L^4","L^8+2L^7+2L^6+L^5-L^3","L^12+2L^11+4L^10+5L^9+5L^8+2L^7-2L^5-L^4-L^3"],// d=5
