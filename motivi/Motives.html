@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motives</title>
     <script src="polynomial.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -83,7 +84,6 @@
     </form>
     <div class="result" id="resultQuot2"></div>
     <div class="result" id="resultQuot"></div>
-
     <script>
         document.getElementById('polynomial-form').addEventListener('submit', function(event) {
             event.preventDefault();  
@@ -135,8 +135,7 @@
             document.getElementById('resultQuot').innerHTML = '[(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub>]= ' + sostituisciLConAsterisco( f);
             document.getElementById('resultQuot2').innerHTML = '&chi;<sub>(Quot<sup>' +d + '</sup><sub>' + r + '</sub>(𝔸<sup>' + n +  '</sup>))<sub>0</sub></sub>= ' + Polynomial(f).eval(1);
         });
- 
-        
+  
         function fattoriale(p){
             var p1 = new Polynomial('1'); 
             for(var h = 1 ; h<=p ; h++ ){
@@ -158,7 +157,8 @@
 
         function hilbertScheme(d, n) {
             if(d==1) return "1";
-            if(n<1) return "0";
+            if(d==0) return "1";
+            if(n<1) return "1";
             lista = [
             ["1"],//d=2
             ["1","L^2+L+1"],//d=3
@@ -290,10 +290,12 @@
         } 
 
         function Omega(d, n) {
+            if(n<0) return "0";
+            if(d<1) return "0";
+            if (d==1) return "1";
             if(n==1 & d >1) return "0";
             if(n==1 ) return "1";
             if(n==2) return "L^"+(d-1);
-            if(n<1) return "0";
             if(d==2) return (Polynomial(grassmanniana(1,n-1)).mul("L").toString());
             lista = [["0","L^2"], // d=3
             ["0","L^3","L^6+2L^5+L^4+L^3-L^2"],// d=4
@@ -336,6 +338,7 @@
                 return H1.add(H2.toString()).add(H3.toString()).toString();
             } 
         }
+        
     </script>
 </body>
 </html>
