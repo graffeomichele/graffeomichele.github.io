@@ -335,14 +335,26 @@
                 mot= Polynomial(grassmanniana(1,n)).mul(grassmanniana(1,r)).mul("L^"+a);
                 mot=Polynomial(mot).add(grassmanniana(2,r));
                 return mot}
-            if (d==3) { 
-                a= 2*(r-1);
-                b= r-2;
-                H1=Polynomial(hilbertScheme(3,n)).mul(grassmanniana(1,r)).mul("L^"+a);  
-                H2=Polynomial(grassmanniana(2,r)).mul(grassmanniana(1,2*n)).mul("L^"+b);  
-                H3=Polynomial(grassmanniana(3,r));
-                return H1.add(H2.toString()).add(H3.toString()).toString();
-            } 
+                if (d==3) { 
+                    a= 2*(r-1);
+                    b= r-2;
+                    H1=Polynomial(hilbertScheme(3,n)).mul(grassmanniana(1,r)).mul("L^"+a);  
+                    H2=Polynomial(grassmanniana(2,r)).mul(grassmanniana(1,2*n)).mul("L^"+b);  
+                    H3=Polynomial(grassmanniana(3,r));
+                    return H1.add(H2.toString()).add(H3.toString()).toString();
+                }
+                if (d==4) { 
+                    a= 3*(r-1);
+                    b= 2*(r-2);
+                    bp=2*(n+r-2)-1;
+                    c= r-3; 
+                    H1=Polynomial(hilbertScheme(4,n)).mul(grassmanniana(1,r)).mul("L^"+a);  
+                    H2=Polynomial(grassmanniana(2,r)).mul(grassmanniana(1,n)).mul(grassmanniana(1,2)).mul("L^"+bp);  
+                    H2p=Polynomial(grassmanniana(2,r)).mul(grassmanniana(2,2*n)).mul("L^"+b);  
+                    H3=Polynomial(grassmanniana(3,r)).mul(grassmanniana(1,3*n)).mul("L^"+c);
+                    H4=Polynomial(grassmanniana(4,r));
+                    return H1.add(H2.toString()).add(H2p.toString()).add(H3.toString()).add(H4.toString()).toString();
+                } 
         }
         
     </script>
